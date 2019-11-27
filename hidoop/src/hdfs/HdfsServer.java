@@ -48,8 +48,7 @@ public class HdfsServer implements IHdfsServer{
             }else if(cmdClient=="CMD_WRITE"){
                 write(req[1],oss);
             }else if(cmdClient=="CMD_READ"){
-            }else{
-            	read(req[1],oos);
+                read(req[1],oos);
             }
         }
     }
