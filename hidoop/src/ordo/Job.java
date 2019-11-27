@@ -3,7 +3,6 @@ package ordo;
 import map.MapReduce;
 import formats.*;
 
-import java.net.MalformedURLException;
 import java.rmi.*;
 
 public class Job implements JobInterfaceX {
