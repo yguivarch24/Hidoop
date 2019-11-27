@@ -6,7 +6,9 @@ import formats.KV;
 import formats.KVFormat;
 import formats.LineFormat;
 
-public class HdfsClient {
+public class HdfsClient implements IHdfsClient {
+    private Machine hdfsS[];
+
 
     private static void usage() {
         System.out.println("Usage: java HdfsClient read <file>");
