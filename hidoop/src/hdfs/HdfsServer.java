@@ -38,7 +38,7 @@ public class HdfsServer implements IHdfsServer{
         ServerSocket sSocket = new ServerSocket(port);
         while(true){
             Socket cSocket=sSocket.accept();
-            ObjectInputStream ois = new ObjectInputStream(CSocket.getInputStream());
+            ObjectInputStream ois = new ObjectInputStream(cSocket.getInputStream());
 			String msg = (String) ois.readObject();
 			String [] req = msg.split(" ");
             String cmdClient = req [0];
