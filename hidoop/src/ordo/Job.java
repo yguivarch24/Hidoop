@@ -2,6 +2,8 @@ package ordo;
 
 import map.MapReduce;
 import formats.*;
+
+import java.net.MalformedURLException;
 import java.rmi.*;
 
 public class Job implements JobInterfaceX {
@@ -23,7 +25,12 @@ public class Job implements JobInterfaceX {
 
     public void startJob(MapReduce mr) {
         for (int i = 0; i < this.nbMaps; i++) {
-            ((DaemonImpl) Naming.lookup("//" + hosts[i] + "/Daemon" + i)).runMap(mr, new KVFormat(this.inFName), new LineFormat(this.outFName), new CallBack(/* TODO */));
+            try {
+                ((DeamonImpl) Naming.lookup("//" + hosts[i] + "/Daemon" + i)).runMap(mr, new KVFormat(this.inFName), new LineFormat(this.outFName), new CallBack(/* TODO */));
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
         }
         
         /* Attente CallBack */
