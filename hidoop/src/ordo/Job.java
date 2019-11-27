@@ -17,15 +17,10 @@ public class Job implements JobInterfaceX {
     private String hosts[];
 
 
-    public Job(String hosts[]) {
-        this.hosts = hosts;
-    }
-
-
     public void startJob(MapReduce mr) {
         for (int i = 0; i < this.nbMaps; i++) {
             try {
-                ((DeamonImpl) Naming.lookup("//" + hosts[i] + "/Daemon" + i)).runMap(mr, new KVFormat(this.inFName), new LineFormat(this.outFName), new CallBack(/* TODO */));
+                ((DeamonImpl) Naming.lookup("//" + hosts[i] + "/Daemon" + i)).runMap(mr, new LineFormat(this.inFName), new KVFormat(this.outFName), new CallBack(/* TODO */));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -34,7 +29,7 @@ public class Job implements JobInterfaceX {
         
         /* Attente CallBack */
 
-        mr.reduce(new LineFormat(this.outFName), new KVFormat(this.inFName));
+        mr.reduce(new KVFormat(this.outFName), new KVFormat(this.inFName));
     }
 
 
@@ -92,6 +87,14 @@ public class Job implements JobInterfaceX {
 
     public SortComparator getSortComparator() {
         return this.sortComp;
+    }
+
+    public void setHosts(String hosts[]) {
+        this.hosts = hosts;
+    }
+
+    public String getHosts() {
+        return this.hosts;
     }
 
     public static void main(String args[]) {
