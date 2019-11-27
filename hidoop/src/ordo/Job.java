@@ -18,9 +18,10 @@ public class Job implements JobInterfaceX {
 
 
     public void startJob(MapReduce mr) {
+        
         for (int i = 0; i < this.nbMaps; i++) {
             try {
-                ((DeamonImpl) Naming.lookup("//" + hosts[i] + "/Daemon" + i)).runMap(mr, new LineFormat(this.inFName), new KVFormat(this.outFName), new CallBack(/* TODO */));
+                ((DeamonImpl) Naming.lookup("//" + hosts[i] + "/Daemon" + i)).runMap(mr, new LineFormat(this.inFName), new KVFormat(this.outFName), new CallBack());
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
