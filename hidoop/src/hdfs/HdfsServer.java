@@ -21,7 +21,7 @@ public class HdfsServer implements IHdfsServer{
 		FileWriter fw = new FileWriter(fileToAdd);
 		fw.write(frag,0, frag.length());
 		oos.writeObject("file is added");
-		fw.close()
+		fw.close();
     }
     public static void read(String hdfsFname, ObjectOutputStream oos){
     	File fileToSend = new File(hdfsFname);
@@ -44,9 +44,9 @@ public class HdfsServer implements IHdfsServer{
             String cmdClient = req [0];
             ObjectOutputStream oos = new ObjectOutputStream(cSocket.getOutputStream());
             if (cmdClient=="CMD_DELETE"){
-                delete(req[1],req[2],oss);
+                delete(req[1],oos);
             }else if(cmdClient=="CMD_WRITE"){
-                write(req[1],oss);
+                write(req[1],req[2],oos);
             }else if(cmdClient=="CMD_READ"){
                 read(req[1],oos);
             }
