@@ -9,13 +9,12 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class DeamonImpl extends UnicastRemoteObject implements Daemon {
-    private File unmappedFile;
+public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable {
     private HdfsServer hdfsServer;
 
-    protected DeamonImpl() throws RemoteException {
+    public DeamonImpl(HdfsServer hdfsServer) throws RemoteException {
+        this.hdfsServer = hdfsServer;
     }
-
 
     @Override
     public void runMap(Mapper m, Format reader, Format writer, CallBack cb) throws RemoteException {
@@ -30,5 +29,10 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon {
         /* ~ hdfsServer.start() ~ */
 
         /* attente des runMap */
+    }
+
+    @Override
+    public void run() {
+
     }
 }
