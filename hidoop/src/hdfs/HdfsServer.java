@@ -13,29 +13,29 @@ import java.net.Socket;
 public class HdfsServer implements IHdfsServer{
 
     public static void delete(String hdfsFname,ObjectOutputStream oos){
-        File fileToDelete = new File(hdfsFname);
+        /*File fileToDelete = new File(hdfsFname);
         fileToDelete.delete();	
-        oos.writeObject("file is deleted");
+        oos.writeObject("file is deleted");*/
     }
     public static void write(String hdfsFname,String frag,ObjectOutputStream oos){
-        File fileToAdd = new File(hdfsFname);
+        /*File fileToAdd = new File(hdfsFname);
 		FileWriter fw = new FileWriter(fileToAdd);
 		fw.write(frag,0, frag.length());
 		oos.writeObject("file is added");
-		fw.close();
+		fw.close();*/
     }
     public static void read(String hdfsFname, ObjectOutputStream oos){
-    	File fileToSend = new File(hdfsFname);
+    	/*File fileToSend = new File(hdfsFname);
     	BufferedReader br = new BufferedReader(new FileReader (fileToSend));
     	String stringToSend = "";				
 		while (br.readLine() != null ) {
 			stringToSend = stringToSend + br.readLine() + "\n";
 		}
-		oos.writeObject(stringToSend);
+		oos.writeObject(stringToSend);*/
     }
 
     public static void main(String[] args){
-        int port=Integer.parseInt(args[0]);
+        /*int port=Integer.parseInt(args[0]);
         ServerSocket sSocket = new ServerSocket(port);
         while(true){
             Socket cSocket=sSocket.accept();
@@ -51,6 +51,6 @@ public class HdfsServer implements IHdfsServer{
             }else if(cmdClient=="CMD_READ"){
                 read(req[1],oos);
             }
-        }
+        }*/
     }
 }
