@@ -5,7 +5,7 @@ import formats.*;
 import config.*;
 import java.util.concurrent.Semaphore;
 import java.rmi.*;
-import hdfs.HdfsServer;
+import hdfs.*;
 
 public class Job implements JobInterfaceX {
 
@@ -16,8 +16,6 @@ public class Job implements JobInterfaceX {
     private int nbReduces;
     private int nbMaps;
     private SortComparator sortComp;
-
-    private HdfsServer hdfsServer;
 
     public Job(String infname, String outfname) {
         this.inFName = infname;
