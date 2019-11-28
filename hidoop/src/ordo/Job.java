@@ -6,6 +6,8 @@ import config.*;
 import java.util.concurrent.Semaphore;
 import java.rmi.*;
 import hdfs.*;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Job implements JobInterfaceX {
 
@@ -24,20 +26,21 @@ public class Job implements JobInterfaceX {
 
     public void startJob(MapReduce mr) {
 
-        /* lancement du serveur ? */
-        hdfsServer = new HdfsServer().start();
-
-        CallBackImpl cb[];
-        boolean wait[];
+        CallBackImpl[] cb = new CallBackImpl[Project.HOSTS.length];
+        boolean[] wait = new boolean[Project.HOSTS.length];
         for (int i = 0; i < Project.HOSTS.length; i++) {
-            cb[i] = new CallBackImpl(new Semaphore(0));
-            wait[i] = false;
+            try {
+                cb[i] = new CallBackImpl(new Semaphore(0));
+                wait[i] = false;
+            } catch (RemoteException e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         Format reader;
         Format writer;
 
-        String[][] maps;
+        HashMap<String, ArrayList<String>> maps;
         try {            
             maps = ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + "/list")).getFragments();
         } catch (Exception e) {
@@ -47,31 +50,31 @@ public class Job implements JobInterfaceX {
         for (int j = 0; j < maxLength(maps); j++) {
             for (int i = 0; i < Project.HOSTS.length; i++) {
 
-                if (maps[i].length >= j) {
+                if (maps.get(Project.HOSTS[i]).size() >= j) {
 
                     try {
                         switch (this.inFormat) {
                             case LINE :
-                                reader = new LineFormat(this.inFName + (i+j+1));
+                                reader = new LineFormat(maps.get(Project.HOSTS[i]).get(j));
                                 break;
                             case KV :
-                                reader = new KVFormat(this.inFName + (i+j+1));
+                                reader = new KVFormat(maps.get(Project.HOSTS[i]).get(j));
                                 break;
                             default :
-                                reader = new LineFormat(this.inFName + (i+j+1));
+                                reader = new LineFormat(maps.get(Project.HOSTS[i]).get(j));
                         }
                         switch (this.outFormat) {
                             case LINE :
-                                writer = new LineFormat(this.inFName + (i+j+1) + "-res");
+                                writer = new LineFormat(maps.get(Project.HOSTS[i]).get(j) + "-res");
                                 break;
                             case KV :
-                                writer = new KVFormat(this.inFName + (i+j+1) + "-res");
+                                writer = new KVFormat(maps.get(Project.HOSTS[i]).get(j) + "-res");
                                 break;
                             default :
-                                writer = new KVFormat(this.inFName + (i+j+1) + "-res");
+                                writer = new KVFormat(maps.get(Project.HOSTS[i]).get(j) + "-res");
                                 break;
                         }
-                        ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[i] + "/Daemon" + i)).runMap(mr, reader, writer, cb[i]);
+                        ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[i] + ":" + Project.PORT.toString() + "/Daemon" + (i+1))).runMap(mr, reader, writer, cb[i]);
                         /* runMap bloquant ? */
                         wait[i] = true;
                     } catch (Exception e) {
@@ -82,7 +85,11 @@ public class Job implements JobInterfaceX {
             
             for (int i = 0; i < Project.HOSTS.length; i++) {
                 if (wait[i]) {
-                    cb[i].mapFini.acquire();
+                    try {
+                        cb[i].mapFini.acquire();
+                    } catch (InterruptedException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         }
@@ -104,14 +111,14 @@ public class Job implements JobInterfaceX {
                 writer = new KVFormat(this.outFName);
                 break;
         }
-        mr.reduce(outReader, writer);
+        mr.reduce(reader, writer);
     }
 
-    private static int maxLength(String list[][]){
+    private static int maxLength(HashMap<String, ArrayList<String>> map){
         int max = 0;
-        for (int i = 0; i < list.length; i++) {
-            if (max < list[i].length) {
-                max = list[i].length;
+        for (int i = 0; i < Project.HOSTS.length; i++) {
+            if (max < map.get(Project.HOSTS[i]).size()) {
+                max = map.get(Project.HOSTS[i]).size();
             }
         }
         return max;
