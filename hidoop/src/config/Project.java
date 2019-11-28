@@ -4,4 +4,10 @@ public class Project {
 
     public final static String PATH = "";
     public final static String[] HOSTS = {"bore", "azote", "antimoine"};
+    public final static String NAMINGNODE = "fluor";
+
+
+    public static void main(String[] args) {
+
+    }
 }
