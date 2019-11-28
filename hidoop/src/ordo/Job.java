@@ -16,12 +16,17 @@ public class Job implements JobInterfaceX {
     private int nbMaps;
     private SortComparator sortComp;
 
+    private HdfsServer hdfsServer;
+
     public Job(String infname, String outfname) {
         this.inFName = infname;
         this.outFName = outfname;
     }
 
     public void startJob(MapReduce mr) {
+
+        /* lancement du serveur ? */
+        hdfsServer = new HdfsServer().start();
 
         CallBackImpl cb[];
         boolean wait[];
@@ -87,6 +92,9 @@ public class Job implements JobInterfaceX {
                 }
             }
         }
+
+        /* appel du hdfsread ? */
+        /* TODO */
 
         mr.reduce(outReader, writer);
     }

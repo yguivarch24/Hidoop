@@ -8,7 +8,7 @@ public class CallBackImpl extends UnicastRemoteObject implements CallBack {
 
     public Semaphore mapFini;
 
-    protected CallBackImpl(Semaphore sem) throws RemoteException {
+    public CallBackImpl(Semaphore sem) throws RemoteException {
         this.mapFini = sem;
     }
 
