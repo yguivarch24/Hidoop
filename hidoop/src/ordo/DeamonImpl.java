@@ -1,6 +1,7 @@
 package ordo;
 
 import formats.Format;
+import hdfs.HdfsServer;
 import hdfs.IHdfsServer;
 import map.Mapper;
 
