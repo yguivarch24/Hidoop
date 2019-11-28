@@ -11,7 +11,7 @@ public class MapReduceImpl implements MapReduce {
         HashMap<String, Integer> map = new HashMap<String, Integer>();
         KV ligne;   // ici, une ligne contient plusieurs mots
 
-        //reader.open(Format.OpenMode.R);
+        ((Format) reader).open(Format.OpenMode.R);
         while((ligne = reader.read()) != null) {
 
             StringTokenizer tokens = new StringTokenizer(ligne.v);
@@ -28,13 +28,13 @@ public class MapReduceImpl implements MapReduce {
                 }
             }
         }
-        //reader.close();
+        ((Format) reader).close();
 
-        //writer.open(Format.OpenMode.W);
+        ((Format) writer).open(Format.OpenMode.W);
         for (String mot : map.keySet()) {
             writer.write(new KV(mot, map.get(mot).toString()));
         }
-        //writer.close();
+        ((Format) writer).close();
     }
 
     public void reduce(FormatReader reader, FormatWriter writer) {
@@ -42,7 +42,7 @@ public class MapReduceImpl implements MapReduce {
         HashMap<String, Integer> map = new HashMap<String, Integer>();
         KV ligne;   // ici, une ligne contient un mot et son nombre d'occurence
 
-        //reader.open(Format.OpenMode.R);
+        ((Format) reader).open(Format.OpenMode.R);
         while ((ligne = reader.read()) != null) {
 
             if (map.containsKey(ligne.v)) {
@@ -53,12 +53,12 @@ public class MapReduceImpl implements MapReduce {
                 map.put(ligne.k, Integer.parseInt(ligne.v));
             }
         }
-        //reader.close();
+        ((Format) reader).close();
 
-        //writer.open(Format.OpenMode.W);
+        ((Format) writer).open(Format.OpenMode.W);
         for (String mot : map.keySet()) {
             writer.write(new KV(mot, map.get(mot).toString()));
         }
-        //writer.close();
+        ((Format) writer).close();
     }
 }

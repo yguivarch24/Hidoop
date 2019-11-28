@@ -5,6 +5,7 @@ import formats.*;
 import config.*;
 import java.util.concurrent.Semaphore;
 import java.rmi.*;
+import hdfs.HdfsServer;
 
 public class Job implements JobInterfaceX {
 
@@ -35,37 +36,11 @@ public class Job implements JobInterfaceX {
             wait[i] = false;
         }
 
-        Format inReader;
-        switch (this.inFormat) {
-            case LINE :
-                inReader = new LineFormat(this.inFName);
-                break;
-            case KV :
-                inReader = new KVFormat(this.inFName);
-                break;
-            default :
-                inReader = new LineFormat(this.inFName);
-        }
-
-        Format outReader;
+        Format reader;
         Format writer;
-        switch (this.outFormat) {
-            case LINE :
-                outReader = new LineFormat(this.outFName);
-                writer = new LineFormat(this.outFName);
-                break;
-            case KV :
-                outReader = new KVFormat(this.outFName);
-                writer = new KVFormat(this.outFName);
-                break;
-            default :
-                outReader = new KVFormat(this.outFName);
-                writer = new KVFormat(this.outFName);
-                break;
-        }
 
         String[][] maps;
-        try {
+        try {            
             maps = ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + "/list")).getFragments();
         } catch (Exception e) {
             throw new RuntimeException("liste des fragments introuvable");
@@ -77,7 +52,28 @@ public class Job implements JobInterfaceX {
                 if (maps[i].length >= j) {
 
                     try {
-                        ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[i] + "/Daemon" + i)).runMap(mr, inReader, writer, cb[i]);
+                        switch (this.inFormat) {
+                            case LINE :
+                                reader = new LineFormat(this.inFName + (i+j+1));
+                                break;
+                            case KV :
+                                reader = new KVFormat(this.inFName + (i+j+1));
+                                break;
+                            default :
+                                reader = new LineFormat(this.inFName + (i+j+1));
+                        }
+                        switch (this.outFormat) {
+                            case LINE :
+                                writer = new LineFormat(this.inFName + (i+j+1) + "-res");
+                                break;
+                            case KV :
+                                writer = new KVFormat(this.inFName + (i+j+1) + "-res");
+                                break;
+                            default :
+                                writer = new KVFormat(this.inFName + (i+j+1) + "-res");
+                                break;
+                        }
+                        ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[i] + "/Daemon" + i)).runMap(mr, reader, writer, cb[i]);
                         /* runMap bloquant ? */
                         wait[i] = true;
                     } catch (Exception e) {
@@ -96,6 +92,20 @@ public class Job implements JobInterfaceX {
         /* appel du hdfsread ? */
         /* TODO */
 
+        switch (this.outFormat) {
+            case LINE :
+                reader = new LineFormat(this.inFName + "-res");
+                writer = new LineFormat(this.outFName);
+                break;
+            case KV :
+                reader = new KVFormat(this.inFName + "-res");
+                writer = new KVFormat(this.outFName);
+                break;
+            default :
+                reader = new KVFormat(this.inFName + "-res");
+                writer = new KVFormat(this.outFName);
+                break;
+        }
         mr.reduce(outReader, writer);
     }
 
