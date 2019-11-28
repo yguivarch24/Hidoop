@@ -1,36 +1,99 @@
 package ordo;
 
-import map.MapReduce;
+import map.*;
 import formats.*;
-
+import config.Project;
+import java.util.concurrent.Semaphore;
 import java.rmi.*;
 
 public class Job implements JobInterfaceX {
 
-    private Format.Type inFormat;
-    private Format.Type outFormat;
-    private String inFName;
-    private String outFName;
+    private Format.Type inFormat = Format.Type.LINE;
+    private Format.Type outFormat = Format.Type.KV;
+    private String inFName = "";
+    private String outFName = "";
     private int nbReduces;
     private int nbMaps;
     private SortComparator sortComp;
-    private String hosts[];
 
+    public Job(String infname, String outfname) {
+        this.inFName = infname;
+        this.outFName = outfname;
+    }
 
     public void startJob(MapReduce mr) {
-        
-        for (int i = 0; i < this.nbMaps; i++) {
-            try {
-                ((DeamonImpl) Naming.lookup("//" + hosts[i] + "/Daemon" + i)).runMap(mr, new LineFormat(this.inFName), new KVFormat(this.outFName), new CallBack());
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
 
+        CallBackImpl cb[];
+        boolean wait[];
+        for (int i = 0; i < Project.HOSTS.length; i++) {
+            cb[i] = new CallBackImpl(new Semaphore(0));
+            wait[i] = false;
         }
-        
-        /* Attente CallBack */
 
-        mr.reduce(new KVFormat(this.outFName), new KVFormat(this.inFName));
+        Format inReader;
+        switch (this.inFormat) {
+            case LINE :
+                inReader = new LineFormat(this.inFName);
+                break;
+            case KV :
+                inReader = new KVFormat(this.inFName);
+                break;
+            default :
+                inReader = new LineFormat(this.inFName);
+        }
+
+        Format outReader;
+        Format writer;
+        switch (this.outFormat) {
+            case LINE :
+                outReader = new LineFormat(this.outFName);
+                writer = new LineFormat(this.outFName);
+                break;
+            case KV :
+                outReader = new KVFormat(this.outFName);
+                writer = new KVFormat(this.outFName);
+                break;
+            default :
+                outReader = new KVFormat(this.outFName);
+                writer = new KVFormat(this.outFName);
+                break;
+        }
+
+        String maps[][] = Naming.lookup("//" + Project.NAMENODE + "/list");
+
+        for (int j = 0; j < maxLength(maps); j++) {
+            for (int i = 0; i < Project.HOSTS.length; i++) {
+
+                if (maps[i].length >= j) {
+
+                    try {
+                        ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[i] + "/Daemon" + i)).runMap(mr, inReader, writer, cb[i]);
+                        /* runMap bloquant ? */
+                        wait[i] = true;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+            
+            for (int i = 0; i < Project.HOSTS.length; i++) {
+                if (wait[i]) {
+                    cb[i].mapFini.acquire();
+                }
+            }
+        }
+
+        mr.reduce(outReader, writer);
+    }
+
+    private static int maxLength(String list[][]){
+        int max = 0;
+        for (int i = 0; i < list.length; i++) {
+            if (max < list[i].length) {
+                max = list[i].length;
+            }
+        }
+        return max;
     }
 
 
@@ -88,17 +151,5 @@ public class Job implements JobInterfaceX {
 
     public SortComparator getSortComparator() {
         return this.sortComp;
-    }
-
-    public void setHosts(String hosts[]) {
-        this.hosts = hosts;
-    }
-
-    public String getHosts() {
-        return this.hosts;
-    }
-
-    public static void main(String args[]) {
-        
     }
 }

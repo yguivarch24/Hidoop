@@ -5,13 +5,12 @@ package ordo;
 import map.MapReduce;
 import formats.Format;
 
-public interface JobInterfaceX  extends JobInterface {
+public interface JobInterfaceX extends JobInterface {
     public void setNumberOfReduces(int tasks);
     public void setNumberOfMaps(int tasks);
     public void setOutputFormat(Format.Type ft);
     public void setOutputFname(String fname);
     public void setSortComparator(SortComparator sc);
-    public void setHosts(String hosts[]);
     
     public int getNumberOfReduces();
     public int getNumberOfMaps();
@@ -20,5 +19,4 @@ public interface JobInterfaceX  extends JobInterface {
     public String getInputFname();
     public String getOutputFname();
     public SortComparator getSortComparator();
-    public String getHosts();
 }
