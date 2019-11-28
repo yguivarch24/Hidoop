@@ -2,7 +2,7 @@ package ordo;
 
 import map.*;
 import formats.*;
-import config.Project;
+import config.*;
 import java.util.concurrent.Semaphore;
 import java.rmi.*;
 
@@ -59,7 +59,12 @@ public class Job implements JobInterfaceX {
                 break;
         }
 
-        String maps[][] = Naming.lookup("//" + Project.NAMENODE + "/list");
+        String[][] maps;
+        try {
+            maps = ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + "/list")).getFragments();
+        } catch (Exception e) {
+            throw new RuntimeException("liste des fragments introuvable");
+        }
 
         for (int j = 0; j < maxLength(maps); j++) {
             for (int i = 0; i < Project.HOSTS.length; i++) {
