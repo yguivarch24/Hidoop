@@ -7,9 +7,10 @@ public class hdfsClient {
 	// partie du code executer par le client
 	
 	public static void  main(String[] args ) throws invalidArgumentException, IOException, connexionPerdueException {
-		
+		System.out.println("coucou git");
 		//chargement des parmetres de HDFS (fichier config : liste des serveurs )
 		byte[] addr = new byte[]{ 127,0,0,1  } ;
+
 		gestionConnexion.listeAddress.add(addr ) ;
 
 		//on doit lire le commande qu'on souhaite réaliser
