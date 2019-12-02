@@ -6,6 +6,8 @@ import formats.KV;
 import formats.KVFormat;
 import formats.LineFormat;
 
+import java.io.IOException;
+
 public class HdfsClient {
     private Machine hdfsS[];
 
@@ -22,6 +24,51 @@ public class HdfsClient {
      int repFactor) { }
 
     public static void HdfsRead(String hdfsFname, String localFSDestFname) { }
+
+    // partie du code executer par le client
+    public static void  main2(String[] args ) throws InvalidArgumentException, IOException, connexionPerdueException {
+        System.out.println("coucou git");
+        //chargement des parmetres de HDFS (fichier config : liste des serveurs )
+        byte[] addr = new byte[]{ 127,0,0,1  } ;
+
+        gestionConnexion.listeAddress.add(addr) ;
+
+        //on doit lire le commande qu'on souhaite réaliser
+        switch(args[0]) {
+
+
+
+            //envoie d'un fichier :   send +path_fichier +format optionelle
+            case "send" :
+                if( args.length < 2 ){
+                    throw new InvalidArgumentException() ;
+                }
+                String FilePath  = args[1];
+                String option = "";
+                if(args.length == 3){
+                    option = args[2] ;
+                }
+
+
+                HdfsClientSend thread = new	HdfsClientSend( FilePath , option) ;
+                thread.start();
+
+
+
+
+                break ;
+            //telecharge le fichier : download + nom_fichier
+            case "download" :
+
+
+                break;
+
+            //liste les fichiers disponibles
+            case "list" :
+                break ;
+        }
+
+    }
 
 	
     public static void main(String[] args) {

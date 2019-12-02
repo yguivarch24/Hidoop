@@ -1,11 +1,13 @@
+package hdfs;
+
 import java.io.*;
 import java.net.Socket;
 
-public class hdfsClientSend extends Thread{
+public class HdfsClientSend extends Thread{
     int tailleEnvoie = 1000 ;
     File fichier  ;
     String argument ;
-    public hdfsClientSend (String FilePath  , String Argument) throws invalidArgumentException, IOException, connexionPerdueException {
+    public HdfsClientSend (String FilePath  , String Argument) throws InvalidArgumentException, IOException, connexionPerdueException {
         this.argument = Argument ;
         fichier = new File(FilePath) ;
         boolean exists = fichier.exists();
@@ -45,7 +47,7 @@ public class hdfsClientSend extends Thread{
             }
 
         }
-        else throw new invalidArgumentException();
+        else throw new InvalidArgumentException();
     }
 
 

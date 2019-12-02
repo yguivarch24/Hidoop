@@ -114,7 +114,7 @@ public class Job implements JobInterfaceX {
 
         switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :
-                reader = new LineFormat(this.inFName + "-res");-
+                reader = new LineFormat(this.inFName + "-res");
                 writer = new LineFormat(this.outFName);
                 break;
             case KV :
@@ -129,7 +129,7 @@ public class Job implements JobInterfaceX {
 
         mr.reduce(reader, writer); // Traitement du fichier résultant des traitements des fragments
 
-        for (int i = 0; i < Projetct.HOSTS.length; i++) { // nettoyage du registre
+        for (int i = 0; i < Project.HOSTS.length; i++) { // nettoyage du registre
             Naming.unbind("//" + Project.HOSTS[i] + ":" + Project.PORT.toString() + "/Daemon");
         }
     }

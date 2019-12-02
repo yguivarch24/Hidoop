@@ -1,3 +1,4 @@
+package  hdfs;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -5,18 +6,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class hdfs implements Runnable {
+public class Hdfs implements Runnable {
 
 	static ServerSocket serverConnection;
 	InetAddress addr ;
 	int port ;
 
-	public hdfs( String host , int port ) throws invalidArgumentException {
+	public Hdfs(String host , int port ) throws InvalidArgumentException {
 	this.port = port ;
 		try {
 			addr = InetAddress.getByName(host);
 		} catch (UnknownHostException e) {
-			throw new invalidArgumentException();
+			throw new InvalidArgumentException();
 		}
 	}
 	
@@ -40,7 +41,7 @@ public class hdfs implements Runnable {
 					//on accept la connexion on execute la suite dans un nouveau thread : 
 					
 
-					hdfsService thread =new  hdfsService(socketClient) ; 
+					HdfsService thread =new  HdfsService(socketClient) ;
 					thread.start () ; 
 					
 					
