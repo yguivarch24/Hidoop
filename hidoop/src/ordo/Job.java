@@ -26,34 +26,35 @@ public class Job implements JobInterfaceX {
 
     public void startJob(MapReduce mr) {
 
-        CallBackImpl[] cb = new CallBackImpl[Project.HOSTS.length];
-        boolean[] wait = new boolean[Project.HOSTS.length];
-        for (int i = 0; i < Project.HOSTS.length; i++) {
+        CallBackImpl[] cb = new CallBackImpl[Project.HOSTS.length]; // 1 CallBack par hosts
+        boolean[] wait = new boolean[Project.HOSTS.length]; // indique si le ième host doit être attendu ou non (càd s'il doit renvoyer un CallBack)
+        for (int i = 0; i < Project.HOSTS.length; i++) { // initialisation des CallBack
             try {
-                cb[i] = new CallBackImpl(new Semaphore(0));
+                cb[i] = new CallBackImpl(new Semaphore(0)); // CallBack = Semaphore initialisé à 0 pour que startJob se bloque si CallBack non reçu
                 wait[i] = false;
             } catch (RemoteException e) {
                 System.out.println(e.getMessage());
             }
         }
 
-        Format reader;
-        Format writer;
+        Format reader; // pour lire les fragments
+        Format writer; // pour écrire le résultat du traitement des fragments
 
-        HashMap<String, ArrayList<String>> maps;
+        HashMap<String, ArrayList<String>> maps; // pour stocker la liste des fragments sur chaque host
         try {            
             maps = ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + "/list")).getFragments();
+            // on récupère les noms des fragments pour chaque hosts sur le registry du NamingNode
         } catch (Exception e) {
             throw new RuntimeException("liste des fragments introuvable");
         }
 
-        for (int j = 0; j < maxLength(maps); j++) {
-            for (int i = 0; i < Project.HOSTS.length; i++) {
+        for (int j = 0; j < maxLength(maps); j++) { // une boucle par fragment (1 fragment traité sur chaque host)
+            for (int i = 0; i < Project.HOSTS.length; i++) { // une boucle par host
 
-                if (maps.get(Project.HOSTS[i]).size() >= j) {
+                if (maps.get(Project.HOSTS[i]).size() >= j) { // si il reste un fragment non traité sur l'host
 
                     try {
-                        switch (this.inFormat) {
+                        switch (this.inFormat) { // initialisation du reader à partir du nom récupérer depuis NamingNode
                             case LINE :
                                 reader = new LineFormat(maps.get(Project.HOSTS[i]).get(j));
                                 break;
@@ -63,7 +64,7 @@ public class Job implements JobInterfaceX {
                             default :
                                 reader = new LineFormat(maps.get(Project.HOSTS[i]).get(j));
                         }
-                        switch (this.outFormat) {
+                        switch (this.outFormat) { // initialisation du writer à partir du nom récupérer depuis NamingNode suivi de -res pour le différencier d'un fragment non traité
                             case LINE :
                                 writer = new LineFormat(maps.get(Project.HOSTS[i]).get(j) + "-res");
                                 break;
@@ -74,19 +75,33 @@ public class Job implements JobInterfaceX {
                                 writer = new KVFormat(maps.get(Project.HOSTS[i]).get(j) + "-res");
                                 break;
                         }
-                        ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[i] + ":" + Project.PORT.toString() + "/Daemon" + (i+1))).runMap(mr, reader, writer, cb[i]);
-                        /* runMap bloquant ? */
-                        wait[i] = true;
+
+                        // création de copies constantes des variables pour le lancement du runMap dans un thread (pour éviter blocage)
+                        final int num = i;
+                        final MapReduce mapRed = mr;
+                        final Format read = reader;
+                        final Format write = writer;
+                        final CallBackImpl[] caba = cb;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() { // lancement du runMap pour le jème fragment sur le ième host
+                                ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.PORT.toString() + "/Daemon")).runMap(mapRed, read, write, caba[num]);
+                            }
+                        }).start(); // lancement du thread
+
+                        wait[i] = true; // un runMap à été lancé, il faudra attendre son CallBack
+
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
                 }
             }
             
-            for (int i = 0; i < Project.HOSTS.length; i++) {
-                if (wait[i]) {
+            for (int i = 0; i < Project.HOSTS.length; i++) { // on attend le CallBack de chaque host ayant sur lesquels un runMap à été lancé
+                if (wait[i]) { // si le CallBack de cet host est attendu
                     try {
-                        cb[i].mapFini.acquire();
+                        cb[i].mapFini.acquire(); // si le CallBack a déja été reçu, on passe, sinon on l'attend
+                        wait[i] = false; // aucuns runMap ne tourne désormais sur cet host, on ne cherchera pas à l'attendre tant qu'aucun autre runMap n'aura été lancé dessus
                     } catch (InterruptedException e) {
                         System.out.println(e.getMessage());
                     }
@@ -97,9 +112,9 @@ public class Job implements JobInterfaceX {
         /* appel du hdfsread ? */
         /* TODO */
 
-        switch (this.outFormat) {
+        switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :
-                reader = new LineFormat(this.inFName + "-res");
+                reader = new LineFormat(this.inFName + "-res");-
                 writer = new LineFormat(this.outFName);
                 break;
             case KV :
@@ -111,7 +126,8 @@ public class Job implements JobInterfaceX {
                 writer = new KVFormat(this.outFName);
                 break;
         }
-        mr.reduce(reader, writer);
+
+        mr.reduce(reader, writer); // Traitement du fichier résultant des traitements des fragments
     }
 
     private static int maxLength(HashMap<String, ArrayList<String>> map){

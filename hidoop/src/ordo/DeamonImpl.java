@@ -25,14 +25,8 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable 
         throw new RemoteException("TO DO");
     }
 
-    public static void main(String args[]) {
-        /* ~ hdfsServer.start() ~ */
-
-        /* attente des runMap */
-    }
-
     @Override
     public void run() {
-
+        /* attente des appels de runMap TODO */
     }
 }
