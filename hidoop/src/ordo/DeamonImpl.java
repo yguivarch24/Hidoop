@@ -7,8 +7,11 @@ import hdfs.IHdfsServer;
 import map.Mapper;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.rmi.AccessException;
+import java.rmi.Naming;
 
 public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable {
     private HdfsServer hdfsServer;
@@ -29,6 +32,12 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable 
 
     @Override
     public void run() {
-        Naming.bind("//" + this.host + ":" + Project.PORT.toString() + "/Daemon");
+        try {
+            Naming.rebind("//" + this.host + ":" + Project.PORT.toString() + "/Daemon", this);
+        } catch (MalformedURLException mue) {
+            throw new RuntimeException(mue.getMessage());
+        } catch (RemoteException re) {
+            throw new RuntimeException(re.getMessage());
+        }
     }
 }

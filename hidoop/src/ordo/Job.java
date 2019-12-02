@@ -4,6 +4,10 @@ import map.*;
 import formats.*;
 import config.*;
 import java.util.concurrent.Semaphore;
+
+import javax.management.RuntimeErrorException;
+
+import java.net.MalformedURLException;
 import java.rmi.*;
 import hdfs.*;
 import java.util.HashMap;
@@ -114,7 +118,7 @@ public class Job implements JobInterfaceX {
 
         switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :
-                reader = new LineFormat(this.inFName + "-res");-
+                reader = new LineFormat(this.inFName + "-res");
                 writer = new LineFormat(this.outFName);
                 break;
             case KV :
@@ -129,8 +133,18 @@ public class Job implements JobInterfaceX {
 
         mr.reduce(reader, writer); // Traitement du fichier résultant des traitements des fragments
 
-        for (int i = 0; i < Projetct.HOSTS.length; i++) { // nettoyage du registre
-            Naming.unbind("//" + Project.HOSTS[i] + ":" + Project.PORT.toString() + "/Daemon");
+        for (int i = 0; i < Project.HOSTS.length; i++) { // nettoyage du registre
+            try {
+                Naming.unbind("//" + Project.HOSTS[i] + ":" + Project.PORT.toString() + "/Daemon");
+            } catch (NotBoundException nbe) {
+                throw new RuntimeException(nbe.getMessage());
+            } catch (MalformedURLException mue) {
+                throw new RuntimeException("URL malformé");
+            } catch (RemoteException re) {
+                throw new RuntimeException(re.getMessage());
+            } catch (AccessException ae) {
+                throw new RuntimeException(ae.getMessage());
+            }
         }
     }
 
