@@ -128,6 +128,10 @@ public class Job implements JobInterfaceX {
         }
 
         mr.reduce(reader, writer); // Traitement du fichier résultant des traitements des fragments
+
+        for (int i = 0; i < Projetct.HOSTS.length; i++) { // nettoyage du registre
+            Naming.unbind("//" + Project.HOSTS[i] + ":" + Project.PORT.toString() + "/Daemon");
+        }
     }
 
     private static int maxLength(HashMap<String, ArrayList<String>> map){
