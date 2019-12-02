@@ -86,20 +86,13 @@ public class Job implements JobInterfaceX {
                         final Format read = reader;
                         final Format write = writer;
                         final CallBackImpl[] caba = cb;
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() { // lancement du runMap pour le jème fragment sur le ième host
+                        new Thread(() -> {
                                 try {
                                     ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.PORT.toString() + "/Daemon")).runMap(mapRed, read, write, caba[num]);
-                                } catch (NotBoundException nbe) {
-                                    throw new RuntimeException(nbe.getMessage());
-                                } catch (RemoteException re) {
-                                    throw new RuntimeException(re.getMessage());
-                                } catch (MalformedURLException mue) {
-                                    throw new RuntimeException(mue.getMessage());
+                                } catch (NotBoundException | MalformedURLException | RemoteException e) {
+                                    throw new RuntimeException(e.getMessage());
                                 }
-                            }
-                        }).start(); // lancement du thread
+                            }).start(); // lancement du thread
 
                         wait[i] = true; // un runMap à été lancé, il faudra attendre son CallBack
 
@@ -144,12 +137,10 @@ public class Job implements JobInterfaceX {
         for (int i = 0; i < Project.HOSTS.length; i++) { // nettoyage du registre
             try {
                 Naming.unbind("//" + Project.HOSTS[i] + ":" + Project.PORT.toString() + "/Daemon");
-            } catch (NotBoundException nbe) {
-                throw new RuntimeException(nbe.getMessage());
+            } catch (NotBoundException | RemoteException e) {
+                throw new RuntimeException(e.getMessage());
             } catch (MalformedURLException mue) {
                 throw new RuntimeException("URL malformé");
-            } catch (RemoteException re) {
-                throw new RuntimeException(re.getMessage());
             }
         }
     }
