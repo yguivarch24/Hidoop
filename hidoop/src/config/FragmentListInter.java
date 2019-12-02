@@ -8,6 +8,10 @@ import java.util.HashMap;
 selon le Daemon sur lequel ils ont été envoyés */
 public interface FragmentListInter extends Remote {
 
-    public HashMap<String, ArrayList<String>> getFragments();
+    void addFragment(String host, String fname);
+
+    void removeFragment(String host, String fname);
+
+    HashMap<String, ArrayList<String>> getFragments();
 
 }
