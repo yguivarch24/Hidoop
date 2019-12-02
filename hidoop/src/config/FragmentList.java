@@ -28,9 +28,5 @@ public class FragmentList extends UnicastRemoteObject implements FragmentListInt
         return fragments;
     }
 
-    public void setFragments(HashMap<String, ArrayList<String>> fragments) {
-        this.fragments = fragments;
-    }
-
 
 }

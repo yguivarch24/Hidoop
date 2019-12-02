@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class HdfsServer implements IHdfsServer{
+public class HdfsServer {
 
     public static void delete(String hdfsFname,ObjectOutputStream oos){
         /*File fileToDelete = new File(hdfsFname);

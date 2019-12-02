@@ -25,7 +25,7 @@ public class Machine{
         return host;
     }
 
-    public getPort(){
+    public String getPort(){
         return port;
     }
 

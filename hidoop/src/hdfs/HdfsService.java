@@ -1,18 +1,18 @@
-
+package hdfs;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class hdfsService  extends Thread  {
+public class HdfsService extends Thread  {
 	Socket socket ; 
 	InputStream  input  ;
 	OutputStream output ; 
 	byte[] message ; 
 	
 	
-	public hdfsService(Socket s) throws IOException {
+	public HdfsService(Socket s) throws IOException {
 		socket = s ; 
 		input = s.getInputStream() ; 
 		output = s.getOutputStream() ;

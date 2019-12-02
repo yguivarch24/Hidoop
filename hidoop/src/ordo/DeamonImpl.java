@@ -3,11 +3,12 @@ package ordo;
 import formats.Format;
 import config.Project;
 import hdfs.HdfsServer;
-import hdfs.IHdfsServer;
 import map.Mapper;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.AccessException;
@@ -34,10 +35,10 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable 
     public void run() {
         try {
             Naming.rebind("//" + this.host + ":" + Project.PORT.toString() + "/Daemon", this);
-        } catch (MalformedURLException mue) {
-            throw new RuntimeException(mue.getMessage());
-        } catch (RemoteException re) {
+        } catch(RemoteException re) {
             throw new RuntimeException(re.getMessage());
+        } catch(MalformedURLException mue) {
+            throw new RuntimeException("URL malformé");
         }
     }
 }

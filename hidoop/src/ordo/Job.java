@@ -89,7 +89,15 @@ public class Job implements JobInterfaceX {
                         new Thread(new Runnable() {
                             @Override
                             public void run() { // lancement du runMap pour le jème fragment sur le ième host
-                                ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.PORT.toString() + "/Daemon")).runMap(mapRed, read, write, caba[num]);
+                                try {
+                                    ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.PORT.toString() + "/Daemon")).runMap(mapRed, read, write, caba[num]);
+                                } catch (NotBoundException nbe) {
+                                    throw new RuntimeException(nbe.getMessage());
+                                } catch (RemoteException re) {
+                                    throw new RuntimeException(re.getMessage());
+                                } catch (MalformedURLException mue) {
+                                    throw new RuntimeException(mue.getMessage());
+                                }
                             }
                         }).start(); // lancement du thread
 
@@ -142,8 +150,6 @@ public class Job implements JobInterfaceX {
                 throw new RuntimeException("URL malformé");
             } catch (RemoteException re) {
                 throw new RuntimeException(re.getMessage());
-            } catch (AccessException ae) {
-                throw new RuntimeException(ae.getMessage());
             }
         }
     }
