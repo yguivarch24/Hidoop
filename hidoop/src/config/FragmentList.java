@@ -18,10 +18,15 @@ public class FragmentList extends UnicastRemoteObject implements FragmentListInt
         }
     }
 
+    @Override
     public void addFragment(String host, String fname) {
         fragments.get(host).add(fname);
     }
 
+    @Override
+    public void removeFragment(String host, String fname) {
+        fragments.get(host).remove(fname);
+    }
 
     @Override
     public HashMap<String, ArrayList<String>> getFragments() {
