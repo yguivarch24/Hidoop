@@ -11,7 +11,7 @@ public class hdfsClient {
 		//chargement des parmetres de HDFS (fichier config : liste des serveurs )
 		byte[] addr = new byte[]{ 127,0,0,1  } ;
 
-		gestionConnexion.listeAddress.add(addr ) ;
+		gestionConnexion.listeAddress.add(addr  ) ;
 
 		//on doit lire le commande qu'on souhaite réaliser
 		switch(args[0]) {
