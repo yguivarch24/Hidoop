@@ -1,26 +1,68 @@
 package hdfs;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class HdfsServer implements Runnable {
 
-    Socket socket ;
-    InputStream input  ;
-    OutputStream output ;
-    byte[] message ;
+    private ServerSocket serverConnection;
+    private InetAddress addr ;
+    private int port ;
 
-
-    public HdfsServer(Socket s) throws IOException {
-        socket = s ;
-        input = s.getInputStream() ;
-        output = s.getOutputStream() ;
+    public HdfsServer(String host, int port) throws InvalidArgumentException {
+        try {
+            this.port = port ;
+            addr = InetAddress.getByName(host);
+            serverConnection = new ServerSocket(port, 50 ,addr);
+        } catch (UnknownHostException e) {
+            throw new InvalidArgumentException();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void run() {
-        try {
+    public void run (){
 
+
+        try {
+            serverConnection =  new ServerSocket(this.port,50 ,addr ) ;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println("serveur connection lancé");
+
+        //on regarde si un nouveau client se connecte
+        while(true) {
+            Socket socketClient  ;
+            try {
+                socketClient = serverConnection.accept() ;
+                System.out.println("connection réalisé ");
+                //on accept la connexion on execute la suite dans un nouveau thread :
+                new Thread(() -> {
+                    traitment(socketClient);
+                }).start();
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private void traitment(Socket socket) {
+
+        InputStream input  ;
+        OutputStream output ;
+        byte[] message ;
+
+        try {
+            input = socket.getInputStream() ;
+            output = socket.getOutputStream() ;
             //on attends le mesage du client
             while (input.available() == 0) {} // on attends
             //on lit la commande /!\ cmd pas entiere ?
@@ -31,40 +73,37 @@ public class HdfsServer implements Runnable {
 
             String[] arg = cmd.split("/@/") ;
             switch(arg[0]){
-                case "write" :
+                case "write" : write("","", output);
                     break ;
                 case "send" :
                     break;
-                case"delete":
+                case"delete": delete("",output);
                     break ;
                 case "list" :
                     break ;
-
-
-
 
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
 
-    public static void delete(String hdfsFname,ObjectOutputStream oos){
+    private static void delete(String hdfsFname, OutputStream os){
         /*File fileToDelete = new File(hdfsFname);
         fileToDelete.delete();	
         oos.writeObject("file is deleted");*/
     }
-    public static void write(String hdfsFname,String frag,ObjectOutputStream oos){
+
+    private static void write(String hdfsFname,String frag,OutputStream oos){
         /*File fileToAdd = new File(hdfsFname);
 		FileWriter fw = new FileWriter(fileToAdd);
 		fw.write(frag,0, frag.length());
 		oos.writeObject("file is added");
 		fw.close();*/
     }
-    public static void read(String hdfsFname, ObjectOutputStream oos){
+
+    private static void read(String hdfsFname, OutputStream oos){
     	/*File fileToSend = new File(hdfsFname);
     	BufferedReader br = new BufferedReader(new FileReader (fileToSend));
     	String stringToSend = "";				
