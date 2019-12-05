@@ -4,9 +4,6 @@ import map.*;
 import formats.*;
 import config.*;
 import java.util.concurrent.Semaphore;
-
-import javax.management.RuntimeErrorException;
-
 import java.net.MalformedURLException;
 import java.rmi.*;
 import hdfs.*;
@@ -17,18 +14,31 @@ public class Job implements JobInterfaceX {
 
     private Format.Type inFormat = Format.Type.LINE;
     private Format.Type outFormat = Format.Type.KV;
-    private String inFName = "";
-    private String outFName = "";
+    private String inFName;
+    private String outFName;
     private int nbReduces;
     private int nbMaps;
     private SortComparator sortComp;
 
+    public Job() {
+        this.inFName = "";
+        this.outFName = "";
+        this.inFormat = Format.Type.LINE;
+        this.outFormat = Format.Type.KV;
+    }
+
     public Job(String infname, String outfname) {
         this.inFName = infname;
         this.outFName = outfname;
+        this.inFormat = Format.Type.LINE;
+        this.outFormat = Format.Type.KV;
     }
 
     public void startJob(MapReduce mr) {
+
+        if (this.outFName.equals("")) {
+            this.outFName = this.inFName + "-KVres";
+        }
 
         CallBackImpl[] cb = new CallBackImpl[Project.HOSTS.length]; // 1 CallBack par hosts
         boolean[] wait = new boolean[Project.HOSTS.length]; // indique si le ième host doit être attendu ou non (càd s'il doit renvoyer un CallBack)
@@ -115,7 +125,7 @@ public class Job implements JobInterfaceX {
         }
 
         /* appel du hdfsread ? */
-        /* TODO */
+        HdfsClient.HdfsRead(this.inFName, this.inFName + "-res"); // en supposant que l'appel static soit possible
 
         switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :
