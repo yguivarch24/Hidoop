@@ -1,16 +1,56 @@
 package hdfs;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class HdfsServer {
+public class HdfsServer implements Runnable {
+
+    Socket socket ;
+    InputStream input  ;
+    OutputStream output ;
+    byte[] message ;
+
+
+    public HdfsServer(Socket s) throws IOException {
+        socket = s ;
+        input = s.getInputStream() ;
+        output = s.getOutputStream() ;
+    }
+
+    public void run() {
+        try {
+
+            //on attends le mesage du client
+            while (input.available() == 0) {} // on attends
+            //on lit la commande /!\ cmd pas entiere ?
+            String cmd = new String( input.readAllBytes()) ;
+            System.out.println(cmd);
+
+            //on traite ici chaqu'une des commandes
+
+            String[] arg = cmd.split("/@/") ;
+            switch(arg[0]){
+                case "write" :
+                    break ;
+                case "send" :
+                    break;
+                case"delete":
+                    break ;
+                case "list" :
+                    break ;
+
+
+
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 
     public static void delete(String hdfsFname,ObjectOutputStream oos){
         /*File fileToDelete = new File(hdfsFname);
@@ -34,8 +74,9 @@ public class HdfsServer {
 		oos.writeObject(stringToSend);*/
     }
 
-    public static void main(String[] args){
-        /*int port=Integer.parseInt(args[0]);
+
+    /*public static void main(String[] args){
+        int port=Integer.parseInt(args[0]);
         ServerSocket sSocket = new ServerSocket(port);
         while(true){
             Socket cSocket=sSocket.accept();
@@ -51,6 +92,6 @@ public class HdfsServer {
             }else if(cmdClient=="CMD_READ"){
                 read(req[1],oos);
             }
-        }*/
-    }
+        }
+    }*/
 }

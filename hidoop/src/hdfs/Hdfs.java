@@ -41,8 +41,8 @@ public class Hdfs implements Runnable {
 					//on accept la connexion on execute la suite dans un nouveau thread : 
 					
 
-					HdfsService thread =new  HdfsService(socketClient) ;
-					thread.start () ; 
+					new Thread(new  HdfsServer(socketClient)).start();
+
 					
 					
 				} catch (IOException e) {
