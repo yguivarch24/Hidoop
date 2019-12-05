@@ -20,6 +20,7 @@ public class HdfsServer implements Runnable {
         } catch (UnknownHostException e) {
             throw new InvalidArgumentException();
         } catch (IOException e) {
+            System.out.println("Impossible de se connecter à " + addr.toString());
             e.printStackTrace();
         }
     }
