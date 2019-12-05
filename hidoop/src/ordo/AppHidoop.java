@@ -17,7 +17,12 @@ public class AppHidoop {
         int nbArgs = args.length;
         switch (nbArgs) {
             case 4 :
-                fileType = toFormat(args[3]);
+                try {
+                    fileType = toFormat(args[3]);
+                } catch (FormatInconnuException e) {
+                    System.out.println(e.getMessage());
+                    System.exit(2);
+                }
             case 3 :
                 nbFragments = Integer.parseInt(args[2]);
             case 2 :
@@ -30,9 +35,11 @@ public class AppHidoop {
                 System.out.println("    NomFichierIn : le nom du fichier d'entrée (obligatoire)");
                 System.out.println("    NomFichierOut : le nom du fichier de sortie (optionnel)");
                 System.out.println("    NombreFragment : le nombre de fragments à former à partir du fichier d'entrée (optionnel, nécessite un nom de fichier de sortie)");
-                System.out.println("    TypeFichier : ")
+                System.out.println("    TypeFichier : le type du fichier d'entrée (optionnel, nécessite un nom de fichier de sortie et un nombre de fragment)");
                 System.exit(1);
         }
+
+        if (outName.equals("")) {outName = inName + "-KVres";}
         
         /* Fragmentation du fichier */
         HdfsClient.HdfsWrite(fileType, inName, nbFragments);
@@ -40,10 +47,10 @@ public class AppHidoop {
         /* Lancement du traitement */
         new Job(inName, inName + "-KVres").startJob(new MapReduceImpl());
 
-        System.out.println("Traitement terminé. Fichier disponible sous le nom de " + )
+        System.out.println("Traitement fini. Fichier disponible sous le nom de " + outName + " dans le repertoire courant");
     }
 
-    private static Format.Type toFormat(String str) {
+    private static Format.Type toFormat(String str) throws FormatInconnuException {
         switch (str) {
             case "Line" :
                 return Format.Type.LINE;
