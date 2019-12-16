@@ -9,19 +9,19 @@ import java.util.ArrayList;
 
 public class Project {
 
-    public final static String PATH = "";
-    public final static String[] HOSTS =  {"localhost","calimero", "bouba", "albator"};//{"bore", "azote", "antimoine"};
-    public final static Integer PORT = 5000;
+    public final static String PATH = "/tmp";
+    public final static String[] HOSTS =  {"localhost","beatles", "bouba", "albator"};
+    public final static Integer[] HOSTSPORT = {4000,4001,4002,4003};
     public final static String NAMINGNODE = "fluor";
+    public final static Integer REGISTRYPORT = 12345;
+
 
     public static void main(String[] args) {
-        ArrayList<HdfsServer> serverList = new ArrayList<>();
         try {
-            LocateRegistry.createRegistry(PORT);
-
-            for (String host : HOSTS) {
-                HdfsServer hdfsServer = new HdfsServer(host,PORT);
-                serverList.add(hdfsServer);
+            LocateRegistry.createRegistry(REGISTRYPORT);
+            for (Integer port: HOSTSPORT) {
+                HdfsServer hdfsServer = new HdfsServer(port);
+                new Thread(hdfsServer).start();
             }
 
         } catch (RemoteException | InvalidArgumentException e) {

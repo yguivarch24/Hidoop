@@ -9,32 +9,21 @@ import java.net.UnknownHostException;
 public class HdfsServer implements Runnable {
 
     private ServerSocket serverConnection;
-    private InetAddress addr ;
     private int port ;
 
-    public HdfsServer(String host, int port) throws InvalidArgumentException {
+    public HdfsServer(int port) throws InvalidArgumentException {
         try {
             this.port = port ;
-            addr = InetAddress.getByName(host);
-            serverConnection = new ServerSocket(port, 50 ,addr);
+            serverConnection = new ServerSocket(port);
         } catch (UnknownHostException e) {
             throw new InvalidArgumentException();
         } catch (IOException e) {
-            System.out.println("Impossible de se connecter à " + addr.toString());
+            System.out.println("Impossible de créer le serveur");
             e.printStackTrace();
         }
     }
 
     public void run (){
-
-
-        try {
-            serverConnection =  new ServerSocket(this.port,50 ,addr ) ;
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        System.out.println("serveur connection lancé");
 
         //on regarde si un nouveau client se connecte
         while(true) {
