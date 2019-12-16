@@ -45,7 +45,7 @@ public class AppHidoop {
         HdfsClient.HdfsWrite(fileType, inName, nbFragments);
 
         /* Lancement du traitement */
-        new Job(inName, inName + "-KVres").startJob(new MapReduceImpl());
+        new Job(inName, inName + "-KVres", fileType).startJob(new MapReduceImpl());
 
         System.out.println("Traitement fini. Fichier disponible sous le nom de " + outName + " dans le repertoire courant");
     }

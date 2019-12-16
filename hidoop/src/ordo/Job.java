@@ -27,10 +27,10 @@ public class Job implements JobInterfaceX {
         this.outFormat = Format.Type.KV;
     }
 
-    public Job(String infname, String outfname) {
+    public Job(String infname, String outfname, Format.Type inForm) {
         this.inFName = infname;
         this.outFName = outfname;
-        this.inFormat = Format.Type.LINE;
+        this.inFormat = inForm;
         this.outFormat = Format.Type.KV;
     }
 
@@ -78,6 +78,7 @@ public class Job implements JobInterfaceX {
                             default :
                                 reader = new LineFormat(maps.get(Project.HOSTS[i]).get(j));
                         }
+                        
                         switch (this.outFormat) { // initialisation du writer à partir du nom récupérer depuis NamingNode suivi de -res pour le différencier d'un fragment non traité
                             case LINE :
                                 writer = new LineFormat(maps.get(Project.HOSTS[i]).get(j) + "-res");
@@ -143,16 +144,6 @@ public class Job implements JobInterfaceX {
         }
 
         mr.reduce(reader, writer); // Traitement du fichier résultant des traitements des fragments
-
-        for (int i = 0; i < Project.HOSTS.length; i++) { // nettoyage du registre
-            try {
-                Naming.unbind("//" + Project.HOSTS[i] + ":" + Project.PORT.toString() + "/Daemon");
-            } catch (NotBoundException | RemoteException e) {
-                throw new RuntimeException(e.getMessage());
-            } catch (MalformedURLException mue) {
-                throw new RuntimeException("URL malformé");
-            }
-        }
     }
 
     private static int maxLength(HashMap<String, ArrayList<String>> map){
