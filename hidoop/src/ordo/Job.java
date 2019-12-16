@@ -128,6 +128,8 @@ public class Job implements JobInterfaceX {
         /* appel du hdfsread ? */
         HdfsClient.HdfsRead(this.inFName, this.inFName + "-res"); // en supposant que l'appel static soit possible
 
+        // TODO : suppression des fragments sur les serveurs
+
         switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :
                 reader = new LineFormat(this.inFName + "-res");
@@ -144,6 +146,8 @@ public class Job implements JobInterfaceX {
         }
 
         mr.reduce(reader, writer); // Traitement du fichier résultant des traitements des fragments
+
+        // TODO : suppression du fichier obtenu par hdfsread (pré-reduce)
     }
 
     private static int maxLength(HashMap<String, ArrayList<String>> map){
