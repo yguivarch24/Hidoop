@@ -12,8 +12,8 @@ import java.util.ArrayList;
 
 public class Job implements JobInterfaceX {
 
-    private Format.Type inFormat = Format.Type.LINE;
-    private Format.Type outFormat = Format.Type.KV;
+    private Format.Type inFormat;
+    private Format.Type outFormat;
     private String inFName;
     private String outFName;
     private int nbReduces;
@@ -99,7 +99,7 @@ public class Job implements JobInterfaceX {
                         final CallBackImpl[] caba = cb;
                         new Thread(() -> {
                                 try {
-                                    ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.PORT.toString() + "/Daemon")).runMap(mapRed, read, write, caba[num]);
+                                    ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.REGISTRYPORT.toString() + "/Daemon")).runMap(mapRed, read, write, caba[num]);
                                 } catch (NotBoundException | MalformedURLException | RemoteException e) {
                                     throw new RuntimeException(e.getMessage());
                                 }

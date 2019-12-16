@@ -34,7 +34,7 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable 
     @Override
     public void run() {
         try {
-            Naming.rebind("//" + this.host + ":" + Project.PORT.toString() + "/Daemon", this);
+            Naming.rebind("//" + this.host + ":" + Project.REGISTRYPORT.toString() + "/Daemon", this);
         } catch(RemoteException re) {
             throw new RuntimeException(re.getMessage());
         } catch(MalformedURLException mue) {
