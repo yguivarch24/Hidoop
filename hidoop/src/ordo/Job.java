@@ -36,7 +36,7 @@ public class Job implements JobInterfaceX {
 
     public void startJob(MapReduce mr) {
 
-        if (this.outFName.equals("")) {
+        if (this.outFName.equals("")) { // si aucun nom pour le fichier de sortie n'à été donné, on met un nom par défaut
             this.outFName = this.inFName + "-KVres";
         }
 
@@ -99,7 +99,7 @@ public class Job implements JobInterfaceX {
                         final CallBackImpl[] caba = cb;
                         new Thread(() -> {
                                 try {
-                                    ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.REGISTRYPORT.toString() + "/Daemon")).runMap(mapRed, read, write, caba[num]);
+                                    ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.HOSTSPORT[num] + "/Daemon")).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
                                 } catch (NotBoundException | MalformedURLException | RemoteException e) {
                                     throw new RuntimeException(e.getMessage());
                                 }
@@ -128,7 +128,7 @@ public class Job implements JobInterfaceX {
         /* appel du hdfsread ? */
         HdfsClient.HdfsRead(this.inFName, this.inFName + "-res"); // en supposant que l'appel static soit possible
 
-        // TODO : suppression des fragments sur les serveurs
+        HdfsClient.Delete(this.inFName); // suppréssion des fragments désormais inutiles sur les serveurs
 
         switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :

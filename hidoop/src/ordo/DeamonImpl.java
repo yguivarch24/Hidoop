@@ -17,10 +17,12 @@ import java.rmi.Naming;
 public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable {
     private HdfsServer hdfsServer;
     private String host;
+    private String port;
 
-    public DeamonImpl(HdfsServer hdfsServer, String machine) throws RemoteException {
+    public DeamonImpl(HdfsServer hdfsServer, String machine, String por) throws RemoteException {
         this.hdfsServer = hdfsServer;
         this.host = machine;
+        this.port = por;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable 
     @Override
     public void run() {
         try {
-            Naming.rebind("//" + this.host + ":" + Project.REGISTRYPORT.toString() + "/Daemon", this);
+            Naming.rebind("//" + this.host + ":" + this.port + "/Daemon", this);
         } catch(RemoteException re) {
             throw new RuntimeException(re.getMessage());
         } catch(MalformedURLException mue) {
