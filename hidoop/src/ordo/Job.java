@@ -128,7 +128,7 @@ public class Job implements JobInterfaceX {
         /* appel du hdfsread ? */
         HdfsClient.HdfsRead(this.inFName, this.inFName + "-res"); // en supposant que l'appel static soit possible
 
-        HdfsClient.Delete(this.inFName); // suppréssion des fragments désormais inutiles sur les serveurs
+        HdfsClient.HdfsDelete(this.inFName); // suppréssion des fragments désormais inutiles sur les serveurs
 
         switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :

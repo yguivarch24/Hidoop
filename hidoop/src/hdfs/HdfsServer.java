@@ -27,7 +27,7 @@ public class HdfsServer implements Runnable {
 
         //on regarde si un nouveau client se connecte
         while(true) {
-            Socket socketClient  ;
+            Socket socketClient;
             try {
                 socketClient = serverConnection.accept() ;
                 System.out.println("connection réalisé ");
