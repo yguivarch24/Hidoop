@@ -41,7 +41,7 @@ public class HdfsServeurThread  extends Thread  {
                     write(arg);
                     break;
                 case "read":
-                    send(arg);
+                    read(arg);
                     break;
                 case "delete":
                     break;
@@ -98,22 +98,27 @@ public class HdfsServeurThread  extends Thread  {
     private void delete(String[] arg){
         System.out.println(this.socket.toString() + " debut delete  ");
         File file = new File(path+arg[1] + ".part"+ Integer.toString( Integer.parseInt( arg[2])));
-        if(file.exists()){
-            var statut = file.delete();
-            if(statut){
-                output.write("ok".getBytes());
-            }
-            else {
+        try {
+            if (file.exists()) {
+                var statut = file.delete();
+
+
+                if (statut) {
+                    output.write("ok".getBytes());
+                } else {
+                    output.write("no".getBytes());
+                }
+
+
+            } else {
                 output.write("no".getBytes());
             }
         }
-        else {
-            output.write("no".getBytes());
+        catch( Exception e) {
         }
+
 
     }
 
 }
-
-
 

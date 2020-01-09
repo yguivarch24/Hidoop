@@ -13,21 +13,21 @@ public class HdfsServeur extends Thread{
     int port ;
 
 
-    public HdfsServeur( String host , int port ) throws invalidArgumentException {
+    public HdfsServeur( String host , int port ) throws InvalidArgumentException {
         this.port = port ;
         try {
             addr = InetAddress.getByName(host);
         } catch (UnknownHostException e) {
-            throw new invalidArgumentException();
+            throw new InvalidArgumentException();
         }
     }
 
-    public HdfsServeur( int port ) throws invalidArgumentException {
+    public HdfsServeur( int port ) throws InvalidArgumentException {
         this.port = port ;
         try {
             addr = InetAddress.getLocalHost();
         } catch (UnknownHostException e) {
-            throw new invalidArgumentException();
+            throw new InvalidArgumentException();
         }
     }
 

@@ -1,19 +1,24 @@
 package hdfs;
 
+import formats.Format;
 import java.io.*;
 import java.net.Socket;
 
-public class HdfsClientSend extends Thread{
+
+public class HdfsClientWrite extends Thread{
+    //TODO à mettre dans Project
     int tailleEnvoie = 1000 ;
     File fichier  ;
     Format.Type format;
-    public HdfsClientSend ( String localFSSourceFname ,Format.Type fmt ,int repFactor) throws InvalidArgumentException, IOException, connexionPerdueException {
-        fichier = new File(FilePath) ;
-        tailleEnvoie = repFactor ;
-        format = fmt ;
+    //TODO repfact = nbr de replication
+
+    public HdfsClientWrite ( String localFSSourceFname ,Format.Type fmt ,int repFactor) throws InvalidArgumentException, IOException, ConnexionPerdueException {
+        fichier = new File(localFSSourceFname);
+        tailleEnvoie = repFactor;
+        format = fmt;
     }
 
-    private void writeNoFormat( ) throws InvalidArgumentException, IOException, connexionPerdueException {
+    private void writeNoFormat( ) throws InvalidArgumentException, IOException, ConnexionPerdueException {
 
         boolean exists = fichier.exists();
         //System.out.println(fichier.getPath() );
@@ -33,7 +38,7 @@ public class HdfsClientSend extends Thread{
 
                 buffer = fis.readNBytes(tailleEnvoie) ;
                 //System.out.println(buffer);
-
+                // TODO GestionConnexion à potentiellement supprimer
                 Socket s = GestionConnexion.connexionServeur() ;
                 while(!s.isConnected() ){}
                 System.out.println("envoie Ã  "+ s.toString());
@@ -60,13 +65,13 @@ public class HdfsClientSend extends Thread{
                     //TODO ajouter au naming node
                 }
 
-                else throw new connexionPerdueException() ;
+                else throw new ConnexionPerdueException() ;
 
                 partie += 1 ;
             }
 
         }
-        else throw new invalidArgumentException();
+        else throw new InvalidArgumentException();
 
     }
 
@@ -74,9 +79,17 @@ public class HdfsClientSend extends Thread{
 
     public void run(){
         if (format == null ) {
-            writeNoFormat() ;
+            try {
+                writeNoFormat() ;
+            } catch (InvalidArgumentException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ConnexionPerdueException e) {
+                e.printStackTrace();
+            }
         }
-        esle(){
+        else{
 
         }
     }

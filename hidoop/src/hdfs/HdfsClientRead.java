@@ -13,15 +13,21 @@ public class HdfsClientRead  extends Thread {
         fichier = new File(PositionLocal) ;
     }
     public void run() {
-        // on demande Ã  chaque serveur la liste des fichier posseder
         //TODO
-        //on regarde quelle sont les parties qui nous interresse  (les inserrer dans une hashmap  nÂ° part -> serveur )
-        //TODO
+
+        //on demande au rmi où sont stocké les fragment du fichier
+
+
         //on les telecharge ensuite dens l'ordre
+            //pour chaque partie :
+            //on se connecte au serveur
+
+            //on envoie la cmd
+            String cmd ="read/@/"+ nom ;
             //on telechage la partie
-            //TODO
+
             //on l'ecrit au bonne enroit dans le fichier
-            //TODO
+
 
     }
 
