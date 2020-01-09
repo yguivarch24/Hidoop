@@ -21,9 +21,15 @@ public class HdfsClient {
     public static void HdfsDelete(String hdfsFname) {}
 	
     public static void HdfsWrite(Format.Type fmt, String localFSSourceFname, 
-     int repFactor) { }
+     int repFactor) {
+        hdfsClientWrite thread = new	hdfsClientWrite( localFSSourceFname , fmt , repFactor) ;
+        thread.start();
+    }
 
-    public static void HdfsRead(String hdfsFname, String localFSDestFname) { }
+    public static void HdfsRead(String hdfsFname, String localFSDestFname) {
+        HdfsClientRead thread = new HdfsClientRead(hdfsFname ,localFSDestFname  ) ;
+        thread.start();
+    }
 
     // partie du code executer par le client
     public static void  main2(String[] args ) throws InvalidArgumentException, IOException, connexionPerdueException {
@@ -31,7 +37,7 @@ public class HdfsClient {
         //chargement des parmetres de HDFS (fichier config : liste des serveurs )
         byte[] addr = new byte[]{ 127,0,0,1  } ;
 
-        gestionConnexion.listeAddress.add(addr) ;
+
 
         //on doit lire le commande qu'on souhaite réaliser
         switch(args[0]) {
