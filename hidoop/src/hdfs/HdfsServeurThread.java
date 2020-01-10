@@ -44,6 +44,7 @@ public class HdfsServeurThread  extends Thread  {
                     read(arg);
                     break;
                 case "delete":
+                    delete(arg) ;
                     break;
             }
 
