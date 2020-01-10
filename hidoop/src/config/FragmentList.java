@@ -15,8 +15,10 @@ public class FragmentList extends UnicastRemoteObject implements FragmentListInt
 
     public FragmentList() throws RemoteException {
         fragments = new HashMap<>();
+        int i = 0;
         for (String s: Project.HOSTS) {
-            fragments.put(s,new ArrayList<>());
+            fragments.put(s + ":" + Project.HOSTSPORT[i],new ArrayList<>());
+            i++;
         }
     }
 
