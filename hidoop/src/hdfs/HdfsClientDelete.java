@@ -94,11 +94,11 @@ public class HdfsClientDelete  extends Thread {
         }
     }
 
-    private List<String> conversion(FragmentList frags) {
+    private List<String> conversion(FragmentList frags) { // conversion d'une fragmentList en une liste telle que le ième fragment se trouve sur le ième host de la liste
         boolean trouve = true;
         List<String> list = new ArrayList<String>();
         int i = 0;
-        while (trouve) {
+        while (trouve) { // pour chaque fragments, on parcours la liste de fragment de chaque host... pas très optimal...
             trouve = false;
             for (String host : frags.getFragments().keySet()) {
                 if ((!trouve) && (frags.getFragments().get(host).contains(nom + ".part" + i))) {
