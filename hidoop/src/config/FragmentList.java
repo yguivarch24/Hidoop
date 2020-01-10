@@ -23,17 +23,17 @@ public class FragmentList extends UnicastRemoteObject implements FragmentListInt
     }
 
     @Override
-    public void addFragment(String host, String fname) {
+    public void addFragment(String host, String fname) throws RemoteException {
         fragments.get(host).add(fname);
     }
 
     @Override
-    public void removeFragment(String host, String fname) {
+    public void removeFragment(String host, String fname) throws RemoteException {
         fragments.get(host).remove(fname);
     }
 
     @Override
-    public HashMap<String, ArrayList<String>> getFragments() {
+    public HashMap<String, ArrayList<String>> getFragments() throws RemoteException {
         return fragments;
     }
 

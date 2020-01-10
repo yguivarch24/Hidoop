@@ -101,7 +101,7 @@ public class Job implements JobInterfaceX {
                         final CallBackImpl[] caba = cb;
                         new Thread(() -> {
                                 try {
-                                    ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.HOSTSPORT[num] + "/Daemon")).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
+                                    ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.REGISTRYPORT + "/Daemon" + num)).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
                                 } catch (NotBoundException | MalformedURLException | RemoteException e) {
                                     throw new RuntimeException(e.getMessage());
                                 }

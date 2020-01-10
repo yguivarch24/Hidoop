@@ -2,6 +2,7 @@ package config;
 
 import java.net.InetSocketAddress;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -9,10 +10,10 @@ import java.util.HashMap;
 selon le Daemon sur lequel ils ont été envoyés */
 public interface FragmentListInter extends Remote {
 
-    void addFragment(String host, String fname);
+    void addFragment(String host, String fname) throws RemoteException;
 
-    void removeFragment(String host, String fname);
+    void removeFragment(String host, String fname) throws RemoteException;
 
-    HashMap<String, ArrayList<String>> getFragments();
+    HashMap<String, ArrayList<String>> getFragments() throws RemoteException;
 
 }

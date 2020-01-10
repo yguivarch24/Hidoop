@@ -12,7 +12,7 @@ public class CallBackImpl extends UnicastRemoteObject implements CallBack {
         this.mapFini = sem;
     }
 
-    public void call() {
+    public void call() throws RemoteException{
         this.mapFini.release();
     }
 }

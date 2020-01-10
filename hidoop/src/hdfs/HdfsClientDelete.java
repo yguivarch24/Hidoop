@@ -33,7 +33,12 @@ public class HdfsClientDelete  extends Thread {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        List<String> listeServeur = conversion(listeNamingNode);
+        List<String> listeServeur = null;
+        try {
+            listeServeur = conversion(listeNamingNode);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         //TODO format de la liste
         //on se connecte au serveurs
         for( String serv : listeServeur ){
@@ -94,7 +99,7 @@ public class HdfsClientDelete  extends Thread {
         }
     }
 
-    private List<String> conversion(FragmentList frags) { // conversion d'une fragmentList en une liste telle que le ième fragment se trouve sur le ième host de la liste
+    private List<String> conversion(FragmentList frags) throws RemoteException { // conversion d'une fragmentList en une liste telle que le ième fragment se trouve sur le ième host de la liste
         boolean trouve = true;
         List<String> list = new ArrayList<String>();
         int i = 0;

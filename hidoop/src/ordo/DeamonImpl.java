@@ -18,11 +18,13 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable 
     private HdfsServeur hdfsServer;
     private String host;
     private String port;
+    private int num;
 
-    public DeamonImpl(HdfsServeur hdfsServer, String machine, String por) throws RemoteException {
+    public DeamonImpl(HdfsServeur hdfsServer, String machine, String por, int i) throws RemoteException {
         this.hdfsServer = hdfsServer;
         this.host = machine;
         this.port = por;
+        this.num = i;
     }
 
     @Override
@@ -36,8 +38,9 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable 
     @Override
     public void run() {
         try {
-            Naming.rebind("//" + this.host + ":" + this.port + "/Daemon", this);
+            Naming.rebind("//" + this.host + ":" + this.port + "/Daemon" + num, this);
         } catch(RemoteException re) {
+            System.out.println(this.port);
             throw new RuntimeException(re.getMessage());
         } catch(MalformedURLException mue) {
             throw new RuntimeException("URL malformé");
