@@ -90,7 +90,7 @@ public class HdfsClientWrite extends Thread{
 
     }
 
-    private void writeKV () throws InvalidArgumentException, IOException, ConnexionPerdueException{
+    private void writeKV () throws InvalidArgumentException, IOException, ConnexionPerdueException, NotBoundException {
         boolean exists = fichier.exists();
         if(exists){
             FileReader fis = new FileReader(fichier);
@@ -99,7 +99,11 @@ public class HdfsClientWrite extends Thread{
             int fileSize = 0;
             int partie = 1 ;
 
-            Socket s = GestionConnexion.connexionServeur() ;
+            Random rand = new Random();
+            int val = rand.nextInt(Project.HOSTS.length);
+            InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
+            int port = Project.HOSTSPORT[val];
+            Socket s = new  Socket(addServeur, port);
             while(!s.isConnected() ){}
             String stringToSend="";
             OutputStream output = s.getOutputStream();
@@ -111,9 +115,17 @@ public class HdfsClientWrite extends Thread{
                     output.write(stringToSend.getBytes());
                     output.close();
                     s.close();
-                    s=GestionConnexion.connexionServeur() ;
+                    rand = new Random();
+                    val = rand.nextInt(Project.HOSTS.length);
+                    addServeur = InetAddress.getByName(Project.HOSTS[val]);
+                    port = Project.HOSTSPORT[val];
+                    s = new  Socket(addServeur, port);
                     output = s.getOutputStream();
                     stringToSend=line;
+
+                    FragmentList liste = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
+                    liste.addFragment(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val], fichier.getName());
+                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", liste);
                 }else{
                     stringToSend=stringToSend+"/n"+line;
                     fileSize=fileSize+line.getBytes().length;
@@ -122,6 +134,9 @@ public class HdfsClientWrite extends Thread{
                     output.write(stringToSend.getBytes());
                     output.close();
                     s.close();
+                    FragmentList liste = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
+                    liste.addFragment(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val], fichier.getName());
+                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", liste);
                 }
             }
 
@@ -153,6 +168,8 @@ public class HdfsClientWrite extends Thread{
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ConnexionPerdueException e) {
+                e.printStackTrace();
+            } catch (NotBoundException e) {
                 e.printStackTrace();
             }
         }
