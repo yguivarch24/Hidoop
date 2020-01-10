@@ -3,9 +3,11 @@ package hdfs;
 import formats.Format;
 import java.io.*;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.Random;
 
 import config.FragmentList;
@@ -75,9 +77,7 @@ public class HdfsClientWrite extends Thread{
                     System.out.println("---fin envoie---");
 
                     //TODO ajouter au naming node
-                    FragmentList liste = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
-                    liste.addFragment(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val], fichier.getName());
-                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", liste);
+                    updateFragmentList(fichier, val);
                 }
 
                 else throw new ConnexionPerdueException() ;
@@ -115,7 +115,6 @@ public class HdfsClientWrite extends Thread{
                     output.write(stringToSend.getBytes());
                     output.close();
                     s.close();
-                    rand = new Random();
                     val = rand.nextInt(Project.HOSTS.length);
                     addServeur = InetAddress.getByName(Project.HOSTS[val]);
                     port = Project.HOSTSPORT[val];
@@ -123,9 +122,7 @@ public class HdfsClientWrite extends Thread{
                     output = s.getOutputStream();
                     stringToSend=line;
 
-                    FragmentList liste = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
-                    liste.addFragment(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val], fichier.getName());
-                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", liste);
+                    updateFragmentList(fichier, val);
                 }else{
                     stringToSend=stringToSend+"/n"+line;
                     fileSize=fileSize+line.getBytes().length;
@@ -134,9 +131,8 @@ public class HdfsClientWrite extends Thread{
                     output.write(stringToSend.getBytes());
                     output.close();
                     s.close();
-                    FragmentList liste = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
-                    liste.addFragment(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val], fichier.getName());
-                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", liste);
+                    updateFragmentList(fichier, val);
+
                 }
             }
 
@@ -173,6 +169,11 @@ public class HdfsClientWrite extends Thread{
                 e.printStackTrace();
             }
         }
+    }
+    private void  updateFragmentList(File fichier,int val) throws RemoteException, NotBoundException, MalformedURLException {
+        FragmentList liste = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
+        liste.addFragment(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val], fichier.getName());
+        Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", liste);
     }
 
 
