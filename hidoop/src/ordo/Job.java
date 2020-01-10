@@ -66,7 +66,7 @@ public class Job implements JobInterfaceX {
         for (int j = 0; j < maxLength(maps); j++) { // une boucle par fragment (1 fragment traité sur chaque host)
             for (int i = 0; i < Project.HOSTS.length; i++) { // une boucle par host
 
-                if (maps.get(Project.HOSTS[i]).size() >= j) { // si il reste un fragment non traité sur l'host
+                if (maps.get(Project.HOSTS[i] + ":" + Project.HOSTSPORT[i]).size() >= j) { // si il reste un fragment non traité sur l'host
 
                     try {
                         switch (this.inFormat) { // initialisation du reader à partir du nom récupérer depuis NamingNode
