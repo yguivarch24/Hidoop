@@ -1,14 +1,15 @@
 package ordo;
 
-import map.*;
-import formats.*;
 import config.*;
-import java.util.concurrent.Semaphore;
-import java.net.MalformedURLException;
-import java.rmi.*;
+import formats.*;
 import hdfs.*;
-import java.util.HashMap;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.Semaphore;
+import map.*;
 
 public class Job implements JobInterfaceX {
 
@@ -56,7 +57,7 @@ public class Job implements JobInterfaceX {
 
         HashMap<String, ArrayList<String>> maps; // pour stocker la liste des fragments sur chaque host
         try {            
-            maps = ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + "/list")).getFragments();
+            maps = ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list")).getFragments();
             // on récupère les noms des fragments pour chaque hosts sur le registry du NamingNode
         } catch (Exception e) {
             throw new RuntimeException("liste des fragments introuvable");
@@ -165,6 +166,7 @@ public class Job implements JobInterfaceX {
         this.inFormat = ft;
     }
 
+    @Override
     public Format.Type getInputFormat() {
         return this.inFormat;
     }
@@ -173,42 +175,52 @@ public class Job implements JobInterfaceX {
         this.inFName = fname;
     }
 
+    @Override
     public String getInputFname() {
         return this.inFName;
     }
 
+    @Override
     public void setOutputFname(String fname) {
         this.outFName = fname;
     }
 
+    @Override
     public String getOutputFname() {
         return this.outFName;
     }
 
+    @Override
     public void setOutputFormat(Format.Type ft) {
         this.outFormat = ft;
     }
 
+    @Override
     public Format.Type getOutputFormat() {
         return this.outFormat;
     }
 
+    @Override
     public void setNumberOfReduces(int tasks) {
         this.nbReduces = tasks;
     }
 
+    @Override
     public int getNumberOfReduces() {
         return this.nbReduces;
     }
 
+    @Override
     public void setNumberOfMaps(int tasks) {
         this.nbMaps = tasks;
     }
 
+    @Override
     public int getNumberOfMaps() {
         return this.nbMaps;
     }
 
+    @Override
     public void setSortComparator(SortComparator sc) {
         this.sortComp = sc;
     }
