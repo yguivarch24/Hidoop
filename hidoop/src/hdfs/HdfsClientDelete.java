@@ -16,8 +16,9 @@ public class HdfsClientDelete  extends Thread {
     public void run(){
     //TODO
         //on demande au rmi les serveur qui possede un fragment du fichier
-        List<String> listeServeur  = new ArrayList<>();
-        //TODO demande au rmi
+        FragmentList listeNamingNode  = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
+        List<String> listeServeur = new ArrayList<>();
+        //TODO format de la liste
         //on se connecte au serveurs
         for( String serv : listeServeur ){
             String[] infoServ = serv.split(":") ;
@@ -28,12 +29,13 @@ public class HdfsClientDelete  extends Thread {
                 System.out.println( "connexion impossible au serveur") ;
             }
             //on envoie la cmd
+            String fName = nom + ".part" + listeServeur.indexOf(serv); // le nom du fragment que le supprime à cette itération
             String cmd ="delete/@/"+ nom+".part"+listeServeur.indexOf(serv) ;
             
             InputStream input = null;
             OutputStream output = null ;
             try {
-                input  = s.getInputStream();
+                input = s.getInputStream();
                 output = s.getOutputStream();
                 output.write(cmd.getBytes());
             } catch (IOException e) {
@@ -56,7 +58,7 @@ public class HdfsClientDelete  extends Thread {
             if( Sbuffer.equals( "ok")){
                 
                 System.out.println("le fichier est bien supprimer");
-                //TODO maj RMI
+                Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISRTYPORT + "/list")).removeFragment(serv, fName));
             }
             else{
                 
