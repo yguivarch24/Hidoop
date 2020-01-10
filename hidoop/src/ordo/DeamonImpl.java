@@ -2,7 +2,7 @@ package ordo;
 
 import formats.Format;
 import config.Project;
-import hdfs.HdfsServer;
+import hdfs.HdfsServeur;
 import map.Mapper;
 
 import java.io.File;
@@ -15,11 +15,11 @@ import java.rmi.AccessException;
 import java.rmi.Naming;
 
 public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable {
-    private HdfsServer hdfsServer;
+    private HdfsServeur hdfsServer;
     private String host;
     private String port;
 
-    public DeamonImpl(HdfsServer hdfsServer, String machine, String por) throws RemoteException {
+    public DeamonImpl(HdfsServeur hdfsServer, String machine, String por) throws RemoteException {
         this.hdfsServer = hdfsServer;
         this.host = machine;
         this.port = por;

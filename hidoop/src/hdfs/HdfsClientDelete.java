@@ -1,7 +1,14 @@
 package hdfs;
 
+import config.FragmentList;
+import config.Project;
+
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +23,16 @@ public class HdfsClientDelete  extends Thread {
     public void run(){
     //TODO
         //on demande au rmi les serveur qui possede un fragment du fichier
-        FragmentList listeNamingNode  = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
+        FragmentList listeNamingNode  = null;
+        try {
+            listeNamingNode = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         List<String> listeServeur = conversion(listeNamingNode);
         //TODO format de la liste
         //on se connecte au serveurs
@@ -58,7 +74,15 @@ public class HdfsClientDelete  extends Thread {
             if( Sbuffer.equals( "ok")){
                 
                 System.out.println("le fichier est bien supprimer");
-                Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISRTYPORT + "/list")).removeFragment(serv, fName));
+                try {
+                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list")).removeFragment(serv, fName));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (NotBoundException e) {
+                    e.printStackTrace();
+                }
             }
             else{
                 
@@ -66,24 +90,23 @@ public class HdfsClientDelete  extends Thread {
             }
 
         }
+    }
 
-        private List<String> conversion(FragmentList frags) {
-            Boolean trouve = true;
-            List<String> list = new ArrayList<String>();
-            int i = 0;
-            while (trouve) {
-                trouve = false;
-                for (String host : frags.keySet()) {
-                    if (!trouve) && (frags.get(host).containsValue(nomFichier + ".part" + i)) {
-                        list.add(host);
-                        trouve = true;
-                    }
+    private List<String> conversion(FragmentList frags) {
+        boolean trouve = true;
+        List<String> list = new ArrayList<String>();
+        int i = 0;
+        while (trouve) {
+            trouve = false;
+            for (String host : frags.getFragments().keySet()) {
+                if ((!trouve) && (frags.getFragments().get(host).contains(nom + ".part" + i))) {
+                    list.add(host);
+                    trouve = true;
                 }
-                i++;
             }
-            return list;
+            i++;
         }
-
+        return list;
     }
 
 }

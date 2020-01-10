@@ -2,10 +2,14 @@ package hdfs;
 
 import formats.Format;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.util.Random;
+
 import config.FragmentList;
-import Project.*;
+import config.Project;
 
 
 public class HdfsClientWrite extends Thread{
@@ -21,7 +25,7 @@ public class HdfsClientWrite extends Thread{
         format = fmt;
     }
 
-    private void writeNoFormat( ) throws InvalidArgumentException, IOException, ConnexionPerdueException {
+    private void writeNoFormat( ) throws InvalidArgumentException, IOException, ConnexionPerdueException, NotBoundException {
 
         boolean exists = fichier.exists();
         //System.out.println(fichier.getPath() );
@@ -44,7 +48,7 @@ public class HdfsClientWrite extends Thread{
                 // TODO GestionConnexion à potentiellement supprimer
                 Random rand = new Random();
                 int val = rand.nextInt(Project.HOSTS.length);
-                InetAddress addServeur = InetAddress.getByName(HOSTS[val]);
+                InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
                 int port = Project.HOSTSPORT[val];
                 Socket s = new  Socket(addServeur, port);
                 while(!s.isConnected() ){}
@@ -84,9 +88,43 @@ public class HdfsClientWrite extends Thread{
 
     }
 
-    private void writeKV () {
+    private void writeKV () throws InvalidArgumentException, IOException, ConnexionPerdueException{
+        boolean exists = fichier.exists();
+        if(exists){
+            FileReader fis = new FileReader(fichier);
+            BufferedReader bufferedReader = new BufferedReader(fis);
+            String line = "";
+            int fileSize = 0;
+            int partie = 1 ;
 
+            Socket s = GestionConnexion.connexionServeur() ;
+            while(!s.isConnected() ){}
+            String stringToSend="";
+            OutputStream output = s.getOutputStream();
+            while ((line = bufferedReader.readLine()) != null){
+                if (fileSize + line.getBytes().length >  tailleEnvoie){
 
+                    String cmd ="write/@/"+ fichier.getName() + "/@/"+Integer.toString( partie) +"/@/"+Integer.toString( stringToSend.getBytes().length)  ;
+                    output.write(cmd.getBytes());
+                    output.write(stringToSend.getBytes());
+                    output.close();
+                    s.close();
+                    s=GestionConnexion.connexionServeur() ;
+                    output = s.getOutputStream();
+                    stringToSend=line;
+                }else{
+                    stringToSend=stringToSend+"/n"+line;
+                    fileSize=fileSize+line.getBytes().length;
+                }
+                if(s.isConnected()){
+                    output.write(stringToSend.getBytes());
+                    output.close();
+                    s.close();
+                }
+            }
+
+        }
+        else throw new InvalidArgumentException();
     }
 
 
@@ -104,7 +142,15 @@ public class HdfsClientWrite extends Thread{
             }
         }
         else{
-
+            try {
+                writeKV() ;
+            } catch (InvalidArgumentException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ConnexionPerdueException e) {
+                e.printStackTrace();
+            }
         }
     }
 
