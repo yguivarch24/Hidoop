@@ -1,12 +1,5 @@
 package config;
 
-import hdfs.HdfsServer;
-import hdfs.InvalidArgumentException;
-
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.util.ArrayList;
-
 public class Project {
 
     public final static String PATH = "/tmp";
