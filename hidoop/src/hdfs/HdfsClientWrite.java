@@ -71,7 +71,7 @@ public class HdfsClientWrite extends Thread{
                     System.out.println("---fin envoie---");
 
                     //TODO ajouter au naming node
-                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list").addFragment(Project.HOSTS[val], fichier.getName())));
+                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list").addFragment(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val], fichier.getName())));
                 }
 
                 else throw new ConnexionPerdueException() ;

@@ -17,7 +17,7 @@ public class HdfsClientDelete  extends Thread {
     //TODO
         //on demande au rmi les serveur qui possede un fragment du fichier
         FragmentList listeNamingNode  = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
-        List<String> listeServeur = new ArrayList<>();
+        List<String> listeServeur = conversion(listeNamingNode);
         //TODO format de la liste
         //on se connecte au serveurs
         for( String serv : listeServeur ){
@@ -29,8 +29,8 @@ public class HdfsClientDelete  extends Thread {
                 System.out.println( "connexion impossible au serveur") ;
             }
             //on envoie la cmd
-            String fName = nom + ".part" + listeServeur.indexOf(serv); // le nom du fragment que le supprime à cette itération
-            String cmd ="delete/@/"+ nom+".part"+listeServeur.indexOf(serv) ;
+            String fName = nom + ".part" + listeServeur.indexOf(serv); // le nom du fragment que l'on supprime à cette itération
+            String cmd ="delete/@/" + fName;
             
             InputStream input = null;
             OutputStream output = null ;
@@ -67,9 +67,22 @@ public class HdfsClientDelete  extends Thread {
 
         }
 
-
-
-        
+        private List<String> conversion(FragmentList frags) {
+            Boolean trouve = true;
+            List<String> list = new ArrayList<String>();
+            int i = 0;
+            while (trouve) {
+                trouve = false;
+                for (String host : frags.keySet()) {
+                    if (!trouve) && (frags.get(host).containsValue(nomFichier + ".part" + i)) {
+                        list.add(host);
+                        trouve = true;
+                    }
+                }
+                i++;
+            }
+            return list;
+        }
 
     }
 
