@@ -3,6 +3,9 @@ package hdfs;
 import formats.Format;
 import java.io.*;
 import java.net.Socket;
+import java.rmi.Naming;
+import config.FragmentList;
+import Project.*;
 
 
 public class HdfsClientWrite extends Thread{
@@ -39,7 +42,11 @@ public class HdfsClientWrite extends Thread{
                 buffer = fis.readNBytes(tailleEnvoie) ;
                 //System.out.println(buffer);
                 // TODO GestionConnexion à potentiellement supprimer
-                Socket s = GestionConnexion.connexionServeur() ;
+                Random rand = new Random();
+                int val = rand.nextInt(Project.HOSTS.length);
+                InetAddress addServeur = InetAddress.getByName(HOSTS[val]);
+                int port = Project.HOSTSPORT[val];
+                Socket s = new  Socket(addServeur, port);
                 while(!s.isConnected() ){}
                 System.out.println("envoie Ã  "+ s.toString());
                 InputStream input  = s.getInputStream();
@@ -62,7 +69,9 @@ public class HdfsClientWrite extends Thread{
 
                     s.close();
                     System.out.println("---fin envoie---");
+
                     //TODO ajouter au naming node
+                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list").addFragment(Project.HOSTS[val], fichier.getName())));
                 }
 
                 else throw new ConnexionPerdueException() ;

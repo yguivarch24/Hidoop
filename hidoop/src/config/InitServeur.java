@@ -1,10 +1,8 @@
 package config;
 
-import hdfs.HdfsServer;
+import hdfs.HdfsServeur;
 import hdfs.InvalidArgumentException;
 
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 
 public class InitServeur {
 
@@ -16,8 +14,8 @@ public class InitServeur {
         }
         try {
             int i = Integer.parseInt(args[0]);
-            HdfsServer hdfsServer = new HdfsServer(Project.HOSTSPORT[i]);
-            new Thread(hdfsServer).start();
+            HdfsServeur hdfsServeur = new HdfsServeur(Project.HOSTSPORT[i]);
+            new Thread(hdfsServeur).start();
         } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
             System.out.println("Il faut un entier comme paramètre");

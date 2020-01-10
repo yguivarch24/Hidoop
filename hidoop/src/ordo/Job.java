@@ -225,6 +225,7 @@ public class Job implements JobInterfaceX {
         this.sortComp = sc;
     }
 
+    @Override
     public SortComparator getSortComparator() {
         return this.sortComp;
     }
