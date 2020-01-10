@@ -75,7 +75,12 @@ public class HdfsClientWrite extends Thread{
 
     }
 
-    private void writeKV () {}
+    private void writeKV () {
+
+
+    }
+
+
 
     public void run(){
         if (format == null ) {

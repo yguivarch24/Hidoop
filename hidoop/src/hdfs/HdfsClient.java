@@ -9,7 +9,7 @@ import formats.LineFormat;
 import java.io.IOException;
 
 public class HdfsClient {
-    private Machine hdfsS[];
+    //private Machine hdfsS[];
 
 
     private static void usage() {
