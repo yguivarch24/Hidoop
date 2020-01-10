@@ -75,7 +75,9 @@ public class HdfsClientDelete  extends Thread {
                 
                 System.out.println("le fichier est bien supprimer");
                 try {
-                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list")).removeFragment(serv, fName));
+                    FragmentList liste = ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list"));
+                    liste.removeFragment(serv, fName);
+                    Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", liste);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 } catch (MalformedURLException e) {
