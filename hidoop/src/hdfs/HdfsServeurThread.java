@@ -15,12 +15,13 @@ public class HdfsServeurThread  extends Thread  {
         input = s.getInputStream() ;
         output = s.getOutputStream() ;
 
-        path ="";
-        path = Integer.toString(s.getLocalPort()  )  ;
+        //path ="";
+        path = Integer.toString(s.getLocalPort()  ) + "/"  ;
     }
 
 
     public void run() {
+        System.out.println(socket.toString() + " j'attends un message");
         try {
 
             //on attends le mesage du client
@@ -50,7 +51,7 @@ public class HdfsServeurThread  extends Thread  {
 
 
         } catch (Exception e) {
-            System.out.println("erreur detected hdfsService");
+            System.out.println("erreur detected hdfsService "+e.toString());
         }
 
 
@@ -76,14 +77,16 @@ public class HdfsServeurThread  extends Thread  {
 
     private void read(String[] arg ) throws IOException {
         System.out.println(this.socket.toString() + " debut read  ");
-        File file = new File(path+arg[1] + ".part"+ Integer.toString( Integer.parseInt( arg[2])));
+        File file = new File(path+arg[1] );
         if(file.exists()){
-            output.write("ok".getBytes());
+            //output.write("ok".getBytes());
             System.out.println(socket.toString() + " les fichier est existant ");
             //l'envoie
             FileInputStream fis = new FileInputStream(file) ;
             int nbByte = fis.available() ;
             byte[] buffer = new byte[nbByte];
+            fis.read(buffer , 0 , nbByte) ;
+            //System.out.println(new String(buffer));
             output.write( buffer , 0, nbByte);
             //on ferme le fichier
             fis.close();
@@ -98,7 +101,7 @@ public class HdfsServeurThread  extends Thread  {
     }
     private void delete(String[] arg){
         System.out.println(this.socket.toString() + " debut delete  ");
-        File file = new File(path+arg[1] + ".part"+ Integer.toString( Integer.parseInt( arg[2])));
+        File file = new File(path+arg[1] );
         try {
             if (file.exists()) {
                 var statut = file.delete();

@@ -1,5 +1,6 @@
 package hdfs;
 
+import config.FragmentListInter;
 import formats.Format;
 import java.io.*;
 import java.net.InetAddress;
@@ -41,17 +42,19 @@ public class HdfsClientWrite extends Thread{
             while(fis.available() > 0 ){   //on pourra paraleliser cette partie
                 System.out.println("le flux n'est pas vide ");
                 //on envoie le flux Ã  un client
-                byte[] buffer  ;
-
-
-
-                buffer = fis.readNBytes(tailleEnvoie) ;
+                int taille = Math.min(tailleEnvoie, fis.available() ) ;
+                byte[] buffer = new byte[taille];
+                //System.out.println(buffer.length);
+                //System.out.println(partie*tailleEnvoie);
+                fis.read(buffer,0, taille) ;
                 //System.out.println(buffer);
-                // TODO GestionConnexion à potentiellement supprimer
+
                 Random rand = new Random();
                 int val = rand.nextInt(Project.HOSTS.length);
                 InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
+
                 int port = Project.HOSTSPORT[val];
+                System.out.println(addServeur.toString()+":" + port);
                 Socket s = new  Socket(addServeur, port);
                 while(!s.isConnected() ){}
                 System.out.println("envoie Ã  "+ s.toString());
@@ -105,7 +108,12 @@ public class HdfsClientWrite extends Thread{
             InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
             int port = Project.HOSTSPORT[val];
             Socket s = new  Socket(addServeur, port);
-            while(!s.isConnected() ){}
+            while(s.isConnected() ){}
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             String stringToSend="";
             OutputStream output = s.getOutputStream();
             int i = 0;
@@ -175,9 +183,9 @@ public class HdfsClientWrite extends Thread{
         }
     }
     private void  updateFragmentList(File fichier,int val, int i) throws RemoteException, NotBoundException, MalformedURLException {
-        FragmentList liste = (FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
+        FragmentListInter liste = (FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
         liste.addFragment(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val], fichier.getName() + ".part" + i);
-        Naming.rebind("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list", liste);
+
     }
 
 

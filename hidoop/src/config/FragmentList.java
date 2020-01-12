@@ -37,5 +37,9 @@ public class FragmentList extends UnicastRemoteObject implements FragmentListInt
         return fragments;
     }
 
+    public FragmentList getFragmentObject() throws RemoteException{
+        return this ;
+    }
+
 
 }

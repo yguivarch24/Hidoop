@@ -1,7 +1,14 @@
 package hdfs;
 
+import config.FragmentListInter;
+import config.Project;
+
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +18,7 @@ public class HdfsClientRead  extends Thread {
     File fichier  ;
     String nom  ;
     FileOutputStream fos ;
+    FragmentListInter listeNamingNode ;
 
     public HdfsClientRead(String nomFichier  , String PositionLocal){
         nom = nomFichier ;
@@ -20,16 +28,33 @@ public class HdfsClientRead  extends Thread {
         } catch (FileNotFoundException e) {
             System.out.println("probleme avec le fichier ");
         }
+        //gestion du rmi
+        try {
+            listeNamingNode = (FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
     public void run() {
 
 
         //on demande au rmi où sont stocké les fragment du fichier
-        List<String> listeServeur = new ArrayList<>();
-        //TODO RMI recupere les serveur de l'objet 
+        List<String> listeServeur = null;
+        try {
+            listeServeur = conversion(listeNamingNode.getFragments());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
 
         //on les telecharge ensuite dens l'ordre
-        for (String serv : listeServeur) {
+        for( int i = 0 ; i<listeServeur.size() ; i++ ){
+            String serv = listeServeur.get(i) ;
             String[] infoServ = serv.split(":");
             //on se connecte au serveur
             Socket s = null;
@@ -39,7 +64,7 @@ public class HdfsClientRead  extends Thread {
                 System.out.println("connexion impossible au serveur");
             }
             //on envoie la cmd
-            String cmd ="read/@/"+ nom+".part"+listeServeur.indexOf(serv) ;
+            String cmd ="read/@/"+ nom+".part"+i;
 
             InputStream input = null;
             OutputStream output = null ;
@@ -53,7 +78,10 @@ public class HdfsClientRead  extends Thread {
             while(true){
                 try {
                     if (!(input.available() == 0)) {
-                        fos.write(input.readNBytes(input.available()));
+                        byte[] buffer =  input.readNBytes(input.available()) ;
+                       // System.out.println(new String(buffer));
+                        fos.write(  buffer);
+
                         //TODO maj du rmi
                         break;
                     }
@@ -69,5 +97,22 @@ public class HdfsClientRead  extends Thread {
 
 
         }
+    }
+
+    private List<String> conversion(HashMap<String, ArrayList<String>> frags) throws RemoteException { // conversion d'une fragmentList en une liste telle que le ième fragment se trouve sur le ième host de la liste
+        boolean trouve = true;
+        List<String> list = new ArrayList<String>();
+        int i = 0;
+        while (trouve) { // pour chaque fragments, on parcours la liste de fragment de chaque host... pas très optimal...
+            trouve = false;
+            for (String host : frags.keySet()) {
+                if ((!trouve) && (frags.get(host).contains(nom + ".part" + i))) {
+                    list.add(host);
+                    trouve = true;
+                }
+            }
+            i++;
+        }
+        return list;
     }
 }

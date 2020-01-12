@@ -35,17 +35,19 @@ public class HdfsServeur extends Thread{
 
 
         try {
-            serverConnection =  new ServerSocket(this.port,50 ,addr ) ;
+            serverConnection =  new ServerSocket(this.port,50 ) ;
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            System.out.println("erreur serveur socket");
         }
-        System.out.println(this.addr.toString() +" "+this.port+  ": serveur connection lancÃ©");
+        System.out.println(this.addr.toString() +":"+this.port+  ": serveur connection lancÃ©");
 
         //on regarde si un nouveau client se connecte
         while(true) {
             Socket socketClient  ;
             try {
+                System.out.println("lol");
                 socketClient = serverConnection.accept() ;
                 System.out.println(this.addr.toString() +" "+this.port+ ": connection rÃ©alisÃ© ");
                 //on accept la connexion on execute la suite dans un nouveau thread :
@@ -58,6 +60,7 @@ public class HdfsServeur extends Thread{
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                System.out.println("pb de connection");
             }
 
         }

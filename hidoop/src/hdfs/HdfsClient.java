@@ -18,7 +18,10 @@ public class HdfsClient {
         System.out.println("Usage: java HdfsClient delete <file>");
     }
 
-    public static void HdfsDelete(String hdfsFname) {}
+    public static void HdfsDelete(String hdfsFname) {
+        HdfsClientDelete thread = new HdfsClientDelete(hdfsFname);
+        thread.run();
+    }
 
     public static void HdfsWrite(Format.Type fmt, String localFSSourceFname,
                                  int repFactor) {

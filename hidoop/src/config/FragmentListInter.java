@@ -16,4 +16,6 @@ public interface FragmentListInter extends Remote {
 
     HashMap<String, ArrayList<String>> getFragments() throws RemoteException;
 
+    FragmentList getFragmentObject() throws RemoteException ;
+
 }
