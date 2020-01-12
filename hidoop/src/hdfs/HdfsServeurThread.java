@@ -2,6 +2,7 @@ package hdfs;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class HdfsServeurThread  extends Thread  {
     Socket socket ;
@@ -17,6 +18,8 @@ public class HdfsServeurThread  extends Thread  {
 
         //path ="";
         path = Integer.toString(s.getLocalPort()  ) + "/"  ;
+        File file = new File(path);
+        file.mkdir();
     }
 
 
@@ -25,12 +28,12 @@ public class HdfsServeurThread  extends Thread  {
         try {
 
             //on attends le mesage du client
-            while (input.available() == 0) {
-                //System.out.println("serv : j'attends");
-            } // on attends
+            byte[] buffer = new byte[100]; 
+            int nbByte  = input.read(buffer ) ;
+
             //on lit la commande /!\ cmd pas entiere ?
             //System.out.println(input.available());
-            String cmd = new String(input.readNBytes( input.available() ));
+            String cmd = new String(Arrays.copyOfRange( buffer ,0 ,nbByte ));
             System.out.println(this.socket.toString() + " cmd : " + cmd) ;
 
             //on traite ici chaqu'une des commandes
@@ -67,10 +70,10 @@ public class HdfsServeurThread  extends Thread  {
         System.out.println(this.socket.toString() + " creation du fichier ,envoie du ok ");
         output.write("ok".getBytes());
         //on attends la rÃ©ponse
-        while (input.available() <  Integer.parseInt( arg[3])) {
-
-        }
-        fos.write( input.readNBytes(input.available()) );
+        int taille = Integer.parseInt(arg[3]);
+        byte[] buffer = new byte[taille];
+        int nbByte  = input.read(buffer ) ;
+        fos.write(buffer  );
         fos.close();
         System.out.println(this.socket.toString() + " transfert fini");
     }

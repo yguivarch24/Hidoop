@@ -30,7 +30,7 @@ public class testHdfs {
             e.printStackTrace();
         }
         //test read
-        HdfsClient.HdfsRead(fichier , "testReply");
+        //HdfsClient.HdfsRead(fichier , "testReply");
 
 
         //test Suppression
@@ -40,7 +40,7 @@ public class testHdfs {
             e.printStackTrace();
         }
 
-        //HdfsClient.HdfsDelete(fichier);
+        HdfsClient.HdfsDelete(fichier);
     }
 
 
