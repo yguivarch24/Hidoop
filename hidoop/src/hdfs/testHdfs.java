@@ -9,7 +9,7 @@ import java.net.Socket;
 
 public class testHdfs {
     public static void main(String[] args ) throws IOException {
-        String fichier = "test.flac"  ;
+        String fichier = "filesample.txt"  ;
         //lancement du naming nodes
         config.InitNamingNode.main(null);
         for(int i = 0 ; i< Project.HOSTS.length ; i++){

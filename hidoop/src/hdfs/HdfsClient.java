@@ -23,11 +23,10 @@ public class HdfsClient {
         thread.run();
     }
 
-    public static void HdfsWrite(Format.Type fmt, String localFSSourceFname,
-                                 int repFactor) {
-        HdfsClientWrite thread = null;
+    public static void HdfsWrite(Format.Type fmt, String localFSSourceFname, int repFactor) {
         try {
-            thread = new HdfsClientWrite( localFSSourceFname , fmt , repFactor);
+            HdfsClientWrite write = new HdfsClientWrite( localFSSourceFname , fmt , repFactor);
+            write.write();
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -35,7 +34,6 @@ public class HdfsClient {
         } catch (ConnexionPerdueException e) {
             e.printStackTrace();
         }
-        thread.start();
     }
 
     public static void HdfsRead(String hdfsFname, String localFSDestFname) {

@@ -5,13 +5,19 @@ import formats.Format;
 import config.Project ;
 import map.MapReduceImpl;
 
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+
 public class AppHidoop {
 
     public static void main(String args[]) {
 
         String inName = "";
         String outName = "";
-        Format.Type fileType = Format.Type.LINE;
+        Format.Type fileType = null;
         int nbFragments = Project.HOSTS.length;
 
         int nbArgs = args.length;
@@ -43,9 +49,18 @@ public class AppHidoop {
         
         /* Fragmentation du fichier */
         HdfsClient.HdfsWrite(fileType, inName, nbFragments);
+        System.out.println("Write fini");
 
         /* Lancement du traitement */
-        new Job(inName, inName + "-KVres", fileType).startJob(new MapReduceImpl());
+        try {
+            new Job(inName, inName + "-KVres", fileType).startJob(new MapReduceImpl());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("Traitement fini. Fichier disponible sous le nom de " + outName + " dans le repertoire courant");
     }

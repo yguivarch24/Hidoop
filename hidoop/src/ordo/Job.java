@@ -29,14 +29,14 @@ public class Job implements JobInterfaceX {
         this.outFormat = Format.Type.KV;
     }
 
-    public Job(String infname, String outfname, Format.Type inForm) {
+    public Job(String infname, String outfname, Format.Type inForm) throws RemoteException,NotBoundException,MalformedURLException {
         this.inFName = infname;
         this.outFName = outfname;
         this.inFormat = inForm;
         this.outFormat = Format.Type.KV;
     }
 
-    public void startJob(MapReduce mr) {
+    public void startJob(MapReduce mr) throws RemoteException, NotBoundException, MalformedURLException {
 
         if (this.outFName.equals("")) { // si aucun nom pour le fichier de sortie n'à été donné, on met un nom par défaut
             this.outFName = this.inFName + "-KVres";
@@ -57,13 +57,9 @@ public class Job implements JobInterfaceX {
         Format writer; // pour écrire le résultat du traitement des fragments
 
         HashMap<String, ArrayList<String>> maps; // pour stocker la liste des fragments sur chaque host
-        try {            
-            maps = ((FragmentList) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list")).getFragments();
+        maps = ((FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list")).getFragments();
             // on récupère les noms des fragments pour chaque hosts sur le registry du NamingNode
-        } catch (Exception e) {
-            throw new RuntimeException("liste des fragments introuvable");
-        }
-
+        System.out.println(maps.toString());
         for (int j = 0; j < maxLength(maps); j++) { // une boucle par fragment (1 fragment traité sur chaque host)
             for (int i = 0; i < Project.HOSTS.length; i++) { // une boucle par host
 

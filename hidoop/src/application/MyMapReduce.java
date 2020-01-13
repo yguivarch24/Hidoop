@@ -1,5 +1,8 @@
 package application;
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -45,7 +48,15 @@ public class MyMapReduce implements MapReduce {
         j.setInputFormat(Format.Type.LINE);
         j.setInputFname(args[0]);
        long t1 = System.currentTimeMillis();
-		j.startJob(new MyMapReduce());
+		try {
+			j.startJob(new MyMapReduce());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 		long t2 = System.currentTimeMillis();
         System.out.println("time in ms ="+(t2-t1));
         System.exit(0);

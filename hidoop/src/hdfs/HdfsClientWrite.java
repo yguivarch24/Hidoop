@@ -16,7 +16,7 @@ import config.FragmentList;
 import config.Project;
 
 
-public class HdfsClientWrite extends Thread{
+public class HdfsClientWrite {
     //TODO à mettre dans Project
     int tailleEnvoie = 1000 ;
     File fichier  ;
@@ -154,7 +154,7 @@ public class HdfsClientWrite extends Thread{
 
 
 
-    public void run(){
+    public void write(){
         if (format == null ) {
             try {
                 writeNoFormat() ;
