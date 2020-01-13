@@ -150,9 +150,9 @@ public class Job implements JobInterfaceX {
 
     private static int maxLength(HashMap<String, ArrayList<String>> map){
         int max = 0;
-        for (int i = 0; i < Project.HOSTS.length; i++) {
-            if (max < map.get(Project.HOSTS[i]).size()) {
-                max = map.get(Project.HOSTS[i]).size();
+        for (String s:map.keySet()) {
+            if (max < map.get(s).size()) {
+                max = map.get(s).size();
             }
         }
         return max;

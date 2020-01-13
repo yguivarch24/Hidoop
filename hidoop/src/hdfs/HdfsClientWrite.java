@@ -12,20 +12,17 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.Random;
 
-import config.FragmentList;
 import config.Project;
 
 
 public class HdfsClientWrite {
-    //TODO à mettre dans Project
-    int tailleEnvoie = 1000 ;
+
     File fichier  ;
     Format.Type format;
     //TODO repfact = nbr de replication
 
-    public HdfsClientWrite ( String localFSSourceFname ,Format.Type fmt ,int repFactor) throws InvalidArgumentException, IOException, ConnexionPerdueException {
+    public HdfsClientWrite ( String localFSSourceFname ,Format.Type fmt) throws InvalidArgumentException, IOException, ConnexionPerdueException {
         fichier = new File(localFSSourceFname);
-        tailleEnvoie = repFactor;
         format = fmt;
     }
 
@@ -43,7 +40,7 @@ public class HdfsClientWrite {
             while(fis.available() > 0 ){   //on pourra paraleliser cette partie
                 System.out.println("le flux n'est pas vide ");
                 //on envoie le flux Ã  un client
-                int taille = Math.min(tailleEnvoie, fis.available() ) ;
+                int taille = Math.min(Project.TAILLEPART, fis.available() ) ;
                 byte[] buffer = new byte[taille];
                 //System.out.println(buffer.length);
                 //System.out.println(partie*tailleEnvoie);
@@ -67,8 +64,9 @@ public class HdfsClientWrite {
 
                 //TODO la rendre passive on attends la reponse (active) ;
                 System.out.println("attente de la reponse dans du serveur");
-                byte[] bufferRep = new byte[100] ;
-                int nbByte = input.read(bufferRep) ;
+                byte[] bufferRep = new byte[100];
+                int nbByte = input.read(bufferRep);
+
                 System.out.println("la reponse est bien recus");
                 String Sbuffer = new String(Arrays.copyOfRange( bufferRep ,0 ,nbByte ));  ;
                 System.out.println("ok = "  + Sbuffer);
@@ -118,7 +116,7 @@ public class HdfsClientWrite {
             OutputStream output = s.getOutputStream();
             int i = 0;
             while ((line = bufferedReader.readLine()) != null){
-                if (fileSize + line.getBytes().length >  tailleEnvoie){
+                if (fileSize + line.getBytes().length > Project.TAILLEPART){
 
                     String cmd ="write/@/"+ fichier.getName() + "/@/"+Integer.toString( partie) +"/@/"+Integer.toString( stringToSend.getBytes().length)  ;
                     output.write(cmd.getBytes());
@@ -146,6 +144,7 @@ public class HdfsClientWrite {
                     i++;
 
                 }
+
             }
 
         }

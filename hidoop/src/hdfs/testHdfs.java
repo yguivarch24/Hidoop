@@ -23,7 +23,7 @@ public class testHdfs {
             e.printStackTrace();
         }
         //test envoie
-        HdfsClient.HdfsWrite(null ,fichier ,5*1024 );
+        HdfsClient.HdfsWrite(null ,fichier);
         try {
             Thread.sleep(30000);
         } catch (InterruptedException e) {

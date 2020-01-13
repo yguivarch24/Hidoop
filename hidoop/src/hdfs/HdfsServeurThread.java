@@ -51,7 +51,9 @@ public class HdfsServeurThread  extends Thread  {
                     delete(arg) ;
                     break;
             }
-
+            socket.close();
+            socket.getOutputStream().close();
+            socket.getInputStream().close();
 
         } catch (Exception e) {
             System.out.println("erreur detected hdfsService "+e.toString());

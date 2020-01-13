@@ -23,9 +23,9 @@ public class HdfsClient {
         thread.run();
     }
 
-    public static void HdfsWrite(Format.Type fmt, String localFSSourceFname, int repFactor) {
+    public static void HdfsWrite(Format.Type fmt, String localFSSourceFname) {
         try {
-            HdfsClientWrite write = new HdfsClientWrite( localFSSourceFname , fmt , repFactor);
+            HdfsClientWrite write = new HdfsClientWrite( localFSSourceFname , fmt);
             write.write();
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
