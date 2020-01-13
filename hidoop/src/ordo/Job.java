@@ -59,7 +59,6 @@ public class Job implements JobInterfaceX {
         HashMap<String, ArrayList<String>> maps; // pour stocker la liste des fragments sur chaque host
         maps = ((FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list")).getFragments();
             // on récupère les noms des fragments pour chaque hosts sur le registry du NamingNode
-        System.out.println(maps.toString());
         for (int j = 0; j < maxLength(maps); j++) { // une boucle par fragment (1 fragment traité sur chaque host)
             for (int i = 0; i < Project.HOSTS.length; i++) { // une boucle par host
 

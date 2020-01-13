@@ -20,7 +20,7 @@ public class MapReduceImpl implements MapReduce {
                 String mot = tokens.nextToken();
 
                 if (map.containsKey(mot)) {
-                    map.put(mot, map.get(mot).intValue() + 1);
+                    map.put(mot, map.get(mot) + 1);
                 }
 
                 else {

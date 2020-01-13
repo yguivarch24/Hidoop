@@ -38,7 +38,7 @@ public class HdfsClientDelete  extends Thread {
         List<String> listeServeur = null;
         try {
             assert listeNamingNode != null;
-            listeServeur = conversion(listeNamingNode.getFragments()  );
+            listeServeur = conversion(listeNamingNode.getFragments());
         } catch (RemoteException e) {
             e.printStackTrace();
         }

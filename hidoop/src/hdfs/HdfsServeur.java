@@ -45,10 +45,10 @@ public class HdfsServeur extends Thread{
 
         //on regarde si un nouveau client se connecte
         while(true) {
-            Socket socketClient  ;
+
             try {
                 System.out.println("en attente de connection");
-                socketClient = serverConnection.accept() ;
+                Socket socketClient = serverConnection.accept();
                 System.out.println(this.addr.toString() +" "+this.port+ ": connection réalisée ");
                 //on accept la connexion on execute la suite dans un nouveau thread :
 

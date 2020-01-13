@@ -18,29 +18,25 @@ public class AppHidoop {
         String inName = "";
         String outName = "";
         Format.Type fileType = null;
-        int nbFragments = Project.HOSTS.length;
 
         int nbArgs = args.length;
         switch (nbArgs) {
-            case 4 :
+            case 3 :
                 try {
-                    fileType = toFormat(args[3]);
+                    fileType = toFormat(args[2]);
                 } catch (FormatInconnuException e) {
                     System.out.println(e.getMessage());
                     System.exit(2);
                 }
-            case 3 :
-                nbFragments = Integer.parseInt(args[2]);
             case 2 :
                 outName = args[1];
             case 1 :
                 inName = args[0];
                 break;
             default :
-                System.out.println("arguments :  NomFichierIn  NomFichierOut  NombreFragments  TypeFichier");
+                System.out.println("arguments :  NomFichierIn  NomFichierOut  TypeFichier");
                 System.out.println("    NomFichierIn : le nom du fichier d'entrée (obligatoire)");
                 System.out.println("    NomFichierOut : le nom du fichier de sortie (optionnel)");
-                System.out.println("    NombreFragment : le nombre de fragments à former à partir du fichier d'entrée (optionnel, nécessite un nom de fichier de sortie)");
                 System.out.println("    TypeFichier : le type du fichier d'entrée (optionnel, nécessite un nom de fichier de sortie et un nombre de fragment)");
                 System.exit(1);
         }
@@ -49,7 +45,6 @@ public class AppHidoop {
         
         /* Fragmentation du fichier */
         HdfsClient.HdfsWrite(fileType, inName);
-        System.out.println("Write fini");
 
         /* Lancement du traitement */
         try {
@@ -61,7 +56,6 @@ public class AppHidoop {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
         System.out.println("Traitement fini. Fichier disponible sous le nom de " + outName + " dans le repertoire courant");
     }
 

@@ -39,7 +39,7 @@ public class HdfsServeurThread  extends Thread  {
             //on traite ici chaqu'une des commandes
 
             String[] arg = cmd.split("/@/");
-
+            System.out.println(cmd);
             switch (arg[0]) {
                 case "write":
                     write(arg);
@@ -75,7 +75,7 @@ public class HdfsServeurThread  extends Thread  {
         int taille = Integer.parseInt(arg[3]);
         byte[] buffer = new byte[taille];
         int nbByte  = input.read(buffer ) ;
-        fos.write(buffer  );
+        fos.write(buffer);
         fos.close();
         System.out.println(this.socket.toString() + " transfert fini");
     }

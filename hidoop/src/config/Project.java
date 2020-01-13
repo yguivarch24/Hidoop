@@ -13,13 +13,13 @@ import java.rmi.registry.LocateRegistry;
 public class Project {
 
     public final static String PATH = "/tmp/";
-    public final static String[] HOSTS =  {"eowyn","arwen"}; //{"localhost", "localhost", "localhost", "localhost"};
-    public final static Integer[] HOSTSPORT = {4001, 4001};//{4000,4001,4002,4003};
+    public final static String[] HOSTS =  /*{"eowyn","arwen"};*/ {"localhost", /*"localhost", "localhost", "localhost"*/};
+    public final static Integer[] HOSTSPORT = /*{4001, 4001};*/  {4010/*,4011,4012,4013*/};
 
     public final static int TAILLEPART = 5*1024;
 
-    public final static String NAMINGNODE = "eowyn"; //"localhost"; //"fluor";
-    public final static Integer REGISTRYPORT = 12345;
+    public final static String NAMINGNODE = /*"eowyn";*/ "localhost"; //"fluor";
+    public final static Integer REGISTRYPORT = 12344;
 
 
     // Main d'initilisation pour test sur localhost

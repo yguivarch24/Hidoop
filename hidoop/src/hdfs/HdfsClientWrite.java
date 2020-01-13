@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -40,7 +41,7 @@ public class HdfsClientWrite {
             while(fis.available() > 0 ){   //on pourra paraleliser cette partie
                 System.out.println("le flux n'est pas vide ");
                 //on envoie le flux Ã  un client
-                int taille = Math.min(Project.TAILLEPART, fis.available() ) ;
+                int taille = Math.min(Project.TAILLEPART, fis.available()) ;
                 byte[] buffer = new byte[taille];
                 //System.out.println(buffer.length);
                 //System.out.println(partie*tailleEnvoie);
@@ -54,7 +55,6 @@ public class HdfsClientWrite {
                 int port = Project.HOSTSPORT[val];
                 System.out.println(addServeur.toString()+":" + port);
                 Socket s = new  Socket(addServeur, port);
-                while(!s.isConnected() ){}
                 System.out.println("envoie à  "+ s.toString());
                 InputStream input  = s.getInputStream();
                 OutputStream output = s.getOutputStream();
@@ -99,56 +99,71 @@ public class HdfsClientWrite {
             BufferedReader bufferedReader = new BufferedReader(fis);
             String line = "";
             int fileSize = 0;
-            int partie = 1 ;
+            int partie = 0 ;
+            StringBuilder stringToSend= new StringBuilder();
 
-            Random rand = new Random();
-            int val = rand.nextInt(Project.HOSTS.length);
-            InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
-            int port = Project.HOSTSPORT[val];
-            Socket s = new  Socket(addServeur, port);
-            while(s.isConnected() ){}
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            String stringToSend="";
-            OutputStream output = s.getOutputStream();
-            int i = 0;
             while ((line = bufferedReader.readLine()) != null){
-                if (fileSize + line.getBytes().length > Project.TAILLEPART){
+                if(line.getBytes().length > Project.TAILLEPART){
+                    if(fileSize > 0) {
+                        sendServeur(stringToSend.toString(),partie);
+                        fileSize = 0;
+                        stringToSend = new StringBuilder();
+                        partie++;
+                    }
+                    sendServeur(line,partie);
+                    partie++;
+                } else if (fileSize + line.getBytes().length > Project.TAILLEPART){
+                    sendServeur(stringToSend.toString(),partie);
 
-                    String cmd ="write/@/"+ fichier.getName() + "/@/"+Integer.toString( partie) +"/@/"+Integer.toString( stringToSend.getBytes().length)  ;
-                    output.write(cmd.getBytes());
-                    output.write(stringToSend.getBytes());
-                    output.close();
-                    s.close();
-                    val = rand.nextInt(Project.HOSTS.length);
-                    addServeur = InetAddress.getByName(Project.HOSTS[val]);
-                    port = Project.HOSTSPORT[val];
-                    s = new  Socket(addServeur, port);
-                    output = s.getOutputStream();
-                    stringToSend=line;
+                    stringToSend = new StringBuilder(line);
+                    fileSize=line.getBytes().length;
 
-                    updateFragmentList(fichier, val, i);
-                    i++;
+                    partie++;
                 }else{
-                    stringToSend=stringToSend+"/n"+line;
+                    stringToSend.append(line).append('\n');
                     fileSize=fileSize+line.getBytes().length;
                 }
-                if(s.isConnected()){
-                    output.write(stringToSend.getBytes());
-                    output.close();
-                    s.close();
-                    updateFragmentList(fichier, val, i);
-                    i++;
-
-                }
-
             }
+            if(fileSize>0){
+                sendServeur(stringToSend.toString(),partie);
+            }
+
 
         }
         else throw new InvalidArgumentException();
+    }
+
+    private void sendServeur(String stringToSend, int partie) throws IOException, NotBoundException {
+        System.out.println("envoie du fichier au serveur");
+        Random rand = new Random();
+        int val = rand.nextInt(Project.HOSTS.length);
+        InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
+        int port = Project.HOSTSPORT[val];
+        Socket s = new  Socket(addServeur, port);
+        OutputStream output = s.getOutputStream();
+        InputStream input = s.getInputStream();
+        String cmd ="write/@/"+ fichier.getName() + "/@/"+Integer.toString(partie) +"/@/"+Integer.toString( stringToSend.toString().getBytes().length)  ;
+        output.write(cmd.getBytes());
+
+        System.out.println("attente de la reponse dans du serveur");
+        byte[] bufferRep = new byte[100];
+        int nbByte = input.read(bufferRep);
+
+        System.out.println("la reponse est bien recus");
+        String Sbuffer = new String(Arrays.copyOfRange( bufferRep ,0 ,nbByte ));  ;
+        System.out.println("ok = "  + Sbuffer);
+        if(Sbuffer.equals("ok")){
+            //le serveur est pret on peut envoyer le buffer
+            output.write(stringToSend.getBytes());
+
+
+            System.out.println("---fin envoie---");
+            updateFragmentList(fichier, val, partie);
+        }
+        input.close();
+        output.close();
+        s.close();
+
     }
 
 
@@ -167,7 +182,7 @@ public class HdfsClientWrite {
                 e.printStackTrace();
             }
         }
-        else{
+        else if(format == Format.Type.KV || format == Format.Type.LINE){
             try {
                 writeKV() ;
             } catch (InvalidArgumentException e) {
@@ -182,6 +197,7 @@ public class HdfsClientWrite {
         }
     }
     private void  updateFragmentList(File fichier,int val, int i) throws RemoteException, NotBoundException, MalformedURLException {
+        System.out.println(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val] + fichier.getName() + ".part" + i);
         FragmentListInter liste = (FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
         liste.addFragment(Project.HOSTS[val] + ":" + Project.HOSTSPORT[val], fichier.getName() + ".part" + i);
 
