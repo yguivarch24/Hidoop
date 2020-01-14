@@ -48,7 +48,7 @@ public class AppHidoop {
 
         /* Lancement du traitement */
         try {
-            new Job(inName, inName + "-KVres", fileType).startJob(new MapReduceImpl());
+            new Job(inName, outName, fileType).startJob(new MapReduceImpl());
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {

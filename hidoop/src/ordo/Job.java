@@ -8,6 +8,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 import map.*;
@@ -59,32 +60,34 @@ public class Job implements JobInterfaceX {
         HashMap<String, ArrayList<String>> maps; // pour stocker la liste des fragments sur chaque host
         maps = ((FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list")).getFragments();
             // on récupère les noms des fragments pour chaque hosts sur le registry du NamingNode
+
         for (int j = 0; j < maxLength(maps); j++) { // une boucle par fragment (1 fragment traité sur chaque host)
             for (int i = 0; i < Project.HOSTS.length; i++) { // une boucle par host
 
-                if (maps.get(Project.HOSTS[i] + ":" + Project.HOSTSPORT[i]).size() >= j) { // si il reste un fragment non traité sur l'host
+                String keyHost = Project.HOSTS[i] + ":" + Project.HOSTSPORT[i];
 
+                if (maps.get(keyHost).size() > j) { // si il reste un fragment non traité sur l'host
                     try {
                         switch (this.inFormat) { // initialisation du reader à partir du nom récupérer depuis NamingNode
                             case LINE :
-                                reader = new LineFormat(maps.get(Project.HOSTS[i]).get(j));
+                                reader = new LineFormat(maps.get(keyHost).get(j));
                                 break;
                             case KV :
-                                reader = new KVFormat(maps.get(Project.HOSTS[i]).get(j));
+                                reader = new KVFormat(maps.get(keyHost).get(j));
                                 break;
                             default :
-                                reader = new LineFormat(maps.get(Project.HOSTS[i]).get(j));
+                                reader = new LineFormat(maps.get(keyHost).get(j));
                         }
                         
                         switch (this.outFormat) { // initialisation du writer à partir du nom récupérer depuis NamingNode suivi de -res pour le différencier d'un fragment non traité
                             case LINE :
-                                writer = new LineFormat(maps.get(Project.HOSTS[i]).get(j) + "-res");
+                                writer = new LineFormat(maps.get(keyHost).get(j) + "-res");
                                 break;
                             case KV :
-                                writer = new KVFormat(maps.get(Project.HOSTS[i]).get(j) + "-res");
+                                writer = new KVFormat(maps.get(keyHost).get(j) + "-res");
                                 break;
                             default :
-                                writer = new KVFormat(maps.get(Project.HOSTS[i]).get(j) + "-res");
+                                writer = new KVFormat(maps.get(keyHost).get(j) + "-res");
                                 break;
                         }
 
@@ -94,18 +97,22 @@ public class Job implements JobInterfaceX {
                         final Format read = reader;
                         final Format write = writer;
                         final CallBackImpl[] caba = cb;
+                        System.out.println(reader.getFname());
                         new Thread(() -> {
                                 try {
-                                    ((DeamonImpl) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.REGISTRYPORT + "/Daemon" + num)).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
+                                    ((Daemon) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.REGISTRYPORT + "/Daemon" + num)).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
                                 } catch (NotBoundException | MalformedURLException | RemoteException e) {
                                     throw new RuntimeException(e.getMessage());
                                 }
                             }).start(); // lancement du thread
 
-                        wait[i] = true; // un runMap à été lancé, il faudra attendre son CallBack
+                        /*int port = 4010;
+                        HdfsServeur hdfsServeur = new HdfsServeur(port);
+                        (new DaemonImpl(hdfsServeur,"localhost", Integer.toString(port), i)).runMap(mapRed, read, write, caba[num]);*/
 
+                        wait[i] = true; // un runMap à été lancé, il faudra attendre son CallBack
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             }
@@ -116,7 +123,7 @@ public class Job implements JobInterfaceX {
                         cb[i].mapFini.acquire(); // si le CallBack a déja été reçu, on passe, sinon on l'attend
                         wait[i] = false; // aucuns runMap ne tourne désormais sur cet host, on ne cherchera pas à l'attendre tant qu'aucun autre runMap n'aura été lancé dessus
                     } catch (InterruptedException e) {
-                        System.out.println(e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             }

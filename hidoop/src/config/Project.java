@@ -2,7 +2,7 @@ package config;
 
 import hdfs.HdfsServeur;
 import hdfs.InvalidArgumentException;
-import ordo.DeamonImpl;
+import ordo.DaemonImpl;
 
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
@@ -13,7 +13,7 @@ import java.rmi.registry.LocateRegistry;
 public class Project {
 
     public final static String PATH = "/tmp/";
-    public final static String[] HOSTS =  /*{"eowyn","arwen"};*/ {"localhost", /*"localhost", "localhost", "localhost"*/};
+    public final static String[] HOSTS =  /*{"eowyn","arwen"};*/ {"localhost"/*,"localhost", "localhost", "localhost"*/};
     public final static Integer[] HOSTSPORT = /*{4001, 4001};*/  {4010/*,4011,4012,4013*/};
 
     public final static int TAILLEPART = 5*1024;
@@ -33,7 +33,7 @@ public class Project {
             for (int port : HOSTSPORT) {
                 HdfsServeur hdfsServeur = new HdfsServeur(port);
                 new Thread(hdfsServeur).start();
-                new Thread(new DeamonImpl(hdfsServeur,"localhost", Integer.toString(REGISTRYPORT), i)).start();
+                new Thread(new DaemonImpl(hdfsServeur,"localhost", Integer.toString(port), i)).start();
                 i++;
             }
 

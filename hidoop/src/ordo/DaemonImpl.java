@@ -14,13 +14,13 @@ import java.rmi.server.UnicastRemoteObject;
 import java.rmi.AccessException;
 import java.rmi.Naming;
 
-public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable {
+public class DaemonImpl extends UnicastRemoteObject implements Daemon, Runnable {
     private HdfsServeur hdfsServer;
     private String host;
     private String port;
     private int num;
 
-    public DeamonImpl(HdfsServeur hdfsServer, String machine, String por, int i) throws RemoteException {
+    public DaemonImpl(HdfsServeur hdfsServer, String machine, String por, int i) throws RemoteException {
         this.hdfsServer = hdfsServer;
         this.host = machine;
         this.port = por;
@@ -29,7 +29,9 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable 
 
     @Override
     public void runMap(Mapper m, Format reader, Format writer, CallBack cb) throws RemoteException {
-
+        System.out.println("Je me suis lancé avec le fichier "+reader.getFname());
+        reader.setFname(port+"/"+reader.getFname());
+        writer.setFname(port+"/"+writer.getFname());
         m.map(reader, writer); // traitement d'un fragment (celui lié au reader)
 
         cb.call(); // appel du CallBack pour relancer la classe Job
@@ -38,7 +40,10 @@ public class DeamonImpl extends UnicastRemoteObject implements Daemon, Runnable 
     @Override
     public void run() {
         try {
-            Naming.rebind("//" + this.host + ":" + this.port + "/Daemon" + num, this);
+            Naming.rebind("//" + this.host + ":" + Project.REGISTRYPORT + "/Daemon" + num, this);
+
+            System.out.println("Working Directory = " +
+                    System.getProperty("user.dir"));
         } catch(RemoteException re) {
             System.out.println(this.port);
             throw new RuntimeException(re.getMessage());

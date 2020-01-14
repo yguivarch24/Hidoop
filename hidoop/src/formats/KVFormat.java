@@ -31,6 +31,7 @@ public class KVFormat implements Format {
             switch (mode) {
             case R:
                 br = new BufferedReader(new InputStreamReader(new FileInputStream(fname)));
+                System.out.println("buffer :"+br.toString());
                 break;
             case W:
                 bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fname)));
@@ -59,6 +60,7 @@ public class KVFormat implements Format {
     public KV read() {
         try {
             while (true) {
+
                 String l = br.readLine();
                 if (l == null) return null;
                 index += l.length();

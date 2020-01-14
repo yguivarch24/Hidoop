@@ -53,8 +53,8 @@ public class HdfsClientRead  extends Thread {
 
 
         //on les telecharge ensuite dens l'ordre
-        for( int i = 0 ; i<listeServeur.size() ; i++ ){
-            String serv = listeServeur.get(i) ;
+        for( int i = 0 ; i<listeServeur.size() ; i++ ) {
+            String serv = listeServeur.get(i);
             String[] infoServ = serv.split(":");
             //on se connecte au serveur
             Socket s = null;
@@ -64,23 +64,23 @@ public class HdfsClientRead  extends Thread {
                 System.out.println("connexion impossible au serveur");
             }
             //on envoie la cmd
-            String cmd ="read/@/"+ nom+".part"+i;
+            String cmd = "read/@/" + nom + ".part" + i + "-res";
 
             InputStream input = null;
-            OutputStream output = null ;
+            OutputStream output = null;
             try {
-                input  = s.getInputStream();
+                input = s.getInputStream();
                 output = s.getOutputStream();
                 output.write(cmd.getBytes());
             } catch (IOException e) {
                 System.out.println("erreur envoie cmd");
             }
-            while(true){
+            while (true) {
                 try {
                     if (!(input.available() == 0)) {
-                        byte[] buffer =  input.readNBytes(input.available()) ;
-                       // System.out.println(new String(buffer));
-                        fos.write(  buffer);
+                        byte[] buffer = input.readNBytes(input.available());
+                        // System.out.println(new String(buffer));
+                        fos.write(buffer);
 
                         //TODO maj du rmi
                         break;
@@ -95,7 +95,17 @@ public class HdfsClientRead  extends Thread {
 
             //on l'ecrit au bonne enroit dans le fichier
 
+            try {
+                s.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
+        try {
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
