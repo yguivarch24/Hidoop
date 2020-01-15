@@ -7,10 +7,13 @@ import config.Project;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.nio.Buffer;
+import java.nio.CharBuffer;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,62 +52,73 @@ public class HdfsClientDelete  extends Thread {
         for( int i = 0 ; i<listeServeur.size() ; i++ ){
             String serv = listeServeur.get(i) ;
             String[] infoServ = serv.split(":") ;
-            Socket s = null;
-            try {
-                s = new Socket(infoServ[0]  ,Integer.parseInt(infoServ[1]) ) ;
-            } catch (IOException e) {
-                System.out.println( "connexion impossible au serveur") ;
-            }
-            //on envoie la cmd
+
+            //initialisation des commandes
             String fName = nom + ".part" + i; // le nom du fragment que l'on supprime à cette itération
+            String fNameRes = fName + "-res";
             String cmd ="delete/@/" + fName;
-
-
-
-            InputStream input = null;
-            OutputStream output = null ;
+            String cmd2 = "delete/@/" + fNameRes;
             try {
-                input = s.getInputStream();
-                output = s.getOutputStream();
-                output.write(cmd.getBytes());
-            } catch (IOException e) {
-                System.out.println("erreur envoie cmd");
-            }
-            while(true){
+
+                //initialisation du socket
+                Socket s = new Socket(infoServ[0]  ,Integer.parseInt(infoServ[1]) ) ;
+                InputStream input = s.getInputStream();
+                OutputStream output = s.getOutputStream();
                 try {
-                    if (!(input.available() == 0)) break;
+                    //envoie première commande
+                    output.write(cmd.getBytes());
+                } catch (IOException e) {
+                    System.out.println("erreur envoie cmd");
+                }
+
+                try {
+                    byte[] buffer = new byte[16];
+                    Arrays.fill(buffer, (byte) '\0');
+                    int byteread = input.read(buffer);
+                    String Sbuffer = Byte2String(buffer,byteread);
+                    //TODO : Bien lire les buffer avec une boucle while
+                    /*while(byteread > 0) {
+                        byteread = input.read(buffer);
+                        Sbuffer = Sbuffer + new String(buffer);
+                    }*/
+                    System.out.println(Sbuffer);
+                    if( Sbuffer.equals("ok")){
+                        System.out.println("les fichiers part et part-res ont bien ete supprimes");
+                        try {
+                            listeNamingNode.removeFragment(serv, fName);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    } else if( Sbuffer.equals( "ok1")){
+                        try {
+                            listeNamingNode.removeFragment(serv, fName);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("le fichier part a ete supprime") ;
+                    }else if( Sbuffer.equals( "ok2")){
+                        System.out.println("le fichier part-res a ete supprime") ;
+                    }else {
+                        System.out.println("les fichiers n'ont pas pu etre supprime") ;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-            }
-            String Sbuffer = null;
-            try {
-                 Sbuffer = new String(input.readNBytes(  input.available() ))  ;
             } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if( Sbuffer.equals( "ok")){
-                
-                System.out.println("le fichier est bien supprimer");
-
-
-                try {
-                    listeNamingNode.removeFragment(serv, fName);
-
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-            else{
-                
-                System.out.println("le fichier n'as pas pus etre supprimer") ; 
+                System.out.println( "connexion impossible au serveur") ;
             }
 
         }
         System.out.println("fin supression");
+    }
+
+    private String Byte2String(byte[] b, int taille) {
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < taille; i++) {
+            s.append((char) b[i]);
+        }
+        return s.toString();
     }
 
     private List<String> conversion(HashMap<String, ArrayList<String>> frags) throws RemoteException { // conversion d'une fragmentList en une liste telle que le ième fragment se trouve sur le ième host de la liste

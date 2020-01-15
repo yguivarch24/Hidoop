@@ -36,9 +36,10 @@ public class HdfsClient {
         }
     }
 
-    public static void HdfsRead(String hdfsFname, String localFSDestFname) {
+    public static void HdfsRead(String hdfsFname, String localFSDestFname) throws InterruptedException {
         HdfsClientRead thread = new HdfsClientRead(hdfsFname ,localFSDestFname  ) ;
         thread.start();
+        thread.join();
     }
 
 }

@@ -50,11 +50,7 @@ public class MyMapReduce implements MapReduce {
        long t1 = System.currentTimeMillis();
 		try {
 			j.startJob(new MyMapReduce());
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
+		} catch (RemoteException | NotBoundException | MalformedURLException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		long t2 = System.currentTimeMillis();

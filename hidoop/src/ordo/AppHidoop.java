@@ -49,11 +49,7 @@ public class AppHidoop {
         /* Lancement du traitement */
         try {
             new Job(inName, outName, fileType).startJob(new MapReduceImpl());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
+        } catch (RemoteException | NotBoundException | MalformedURLException | InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("Traitement fini. Fichier disponible sous le nom de " + outName + " dans le repertoire courant");

@@ -3,6 +3,8 @@ package ordo;
 import config.*;
 import formats.*;
 import hdfs.*;
+
+import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -37,7 +39,7 @@ public class Job implements JobInterfaceX {
         this.outFormat = Format.Type.KV;
     }
 
-    public void startJob(MapReduce mr) throws RemoteException, NotBoundException, MalformedURLException {
+    public void startJob(MapReduce mr) throws RemoteException, NotBoundException, MalformedURLException, InterruptedException {
 
         if (this.outFName.equals("")) { // si aucun nom pour le fichier de sortie n'à été donné, on met un nom par défaut
             this.outFName = this.inFName + "-KVres";
@@ -106,10 +108,6 @@ public class Job implements JobInterfaceX {
                                 }
                             }).start(); // lancement du thread
 
-                        /*int port = 4010;
-                        HdfsServeur hdfsServeur = new HdfsServeur(port);
-                        (new DaemonImpl(hdfsServeur,"localhost", Integer.toString(port), i)).runMap(mapRed, read, write, caba[num]);*/
-
                         wait[i] = true; // un runMap à été lancé, il faudra attendre son CallBack
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -151,7 +149,8 @@ public class Job implements JobInterfaceX {
 
         mr.reduce(reader, writer); // Traitement du fichier résultant des traitements des fragments
 
-        // TODO : suppression du fichier obtenu par hdfsread (pré-reduce)
+        File fileres = new File(inFName+"-res");
+        boolean bool = fileres.delete();
     }
 
     private static int maxLength(HashMap<String, ArrayList<String>> map){

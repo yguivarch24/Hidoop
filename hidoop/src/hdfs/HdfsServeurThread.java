@@ -106,21 +106,26 @@ public class HdfsServeurThread  extends Thread  {
     }
     private void delete(String[] arg){
         System.out.println(this.socket.toString() + " debut delete  ");
-        File file = new File(path+arg[1] );
+        File file = new File(path+arg[1]);
+        File file2 = new File(path+arg[1]+"-res");
         try {
             if (file.exists()) {
-                var statut = file.delete();
+                var status = file.delete();
+                var status2 = file2.delete();
 
-
-                if (statut) {
+                if (status && status2) {
                     output.write("ok".getBytes());
+                } else if (status) {
+                    output.write("ok1".getBytes());
+                } else if (status2) {
+                    output.write("ok2".getBytes());
                 } else {
-                    output.write("no".getBytes());
+                    output.write("ko".getBytes());
                 }
 
 
             } else {
-                output.write("no".getBytes());
+                output.write("ko".getBytes());
             }
         }
         catch( Exception e) {

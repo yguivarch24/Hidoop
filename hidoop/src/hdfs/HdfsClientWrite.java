@@ -115,7 +115,7 @@ public class HdfsClientWrite {
                 } else if (fileSize + line.getBytes().length > Project.TAILLEPART){
                     sendServeur(stringToSend.toString(),partie);
 
-                    stringToSend = new StringBuilder(line);
+                    stringToSend = new StringBuilder(line).append('\n');
                     fileSize=line.getBytes().length;
 
                     partie++;
@@ -142,7 +142,7 @@ public class HdfsClientWrite {
         Socket s = new  Socket(addServeur, port);
         OutputStream output = s.getOutputStream();
         InputStream input = s.getInputStream();
-        String cmd ="write/@/"+ fichier.getName() + "/@/"+Integer.toString(partie) +"/@/"+Integer.toString( stringToSend.toString().getBytes().length)  ;
+        String cmd ="write/@/"+ fichier.getName() + "/@/"+Integer.toString(partie) +"/@/"+Integer.toString( stringToSend.toString().getBytes().length);
         output.write(cmd.getBytes());
 
         System.out.println("attente de la reponse dans du serveur");

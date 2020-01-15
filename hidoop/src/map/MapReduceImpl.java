@@ -47,7 +47,6 @@ public class MapReduceImpl implements MapReduce {
 
         ((Format) reader).open(Format.OpenMode.R);
         while ((ligne = reader.read()) != null) {
-            System.out.println("je remplis la map");
             if (map.containsKey(ligne.v)) {
                 map.put(ligne.k, map.get(ligne.k) + Integer.parseInt(ligne.v));
             }
@@ -60,7 +59,6 @@ public class MapReduceImpl implements MapReduce {
 
         ((Format) writer).open(Format.OpenMode.W);
         for (String mot : map.keySet()) {
-            System.out.println("j'ecris");
             writer.write(new KV(mot, map.get(mot).toString()));
         }
         ((Format) writer).close();
