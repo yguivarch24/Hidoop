@@ -18,11 +18,11 @@ import config.Project;
 
 public class HdfsClientWrite {
 
-    File fichier  ;
-    Format.Type format;
+    private File fichier  ;
+    private Format.Type format;
     //TODO repfact = nbr de replication
 
-    public HdfsClientWrite ( String localFSSourceFname ,Format.Type fmt) throws InvalidArgumentException, IOException, ConnexionPerdueException {
+    HdfsClientWrite(String localFSSourceFname, Format.Type fmt) {
         fichier = new File(localFSSourceFname);
         format = fmt;
     }
@@ -30,8 +30,6 @@ public class HdfsClientWrite {
     private void writeNoFormat( ) throws InvalidArgumentException, IOException, ConnexionPerdueException, NotBoundException {
 
         boolean exists = fichier.exists();
-        //System.out.println(fichier.getPath() );
-        //System.out.println(fichier.exists());
         if(exists){
             System.out.println("le fichier existe");
             //le fichier existe bien
@@ -43,10 +41,7 @@ public class HdfsClientWrite {
                 //on envoie le flux Ã  un client
                 int taille = Math.min(Project.TAILLEPART, fis.available()) ;
                 byte[] buffer = new byte[taille];
-                //System.out.println(buffer.length);
-                //System.out.println(partie*tailleEnvoie);
                 fis.read(buffer,0, taille) ;
-                //System.out.println(buffer);
 
                 Random rand = new Random();
                 int val = rand.nextInt(Project.HOSTS.length);
@@ -58,7 +53,7 @@ public class HdfsClientWrite {
                 System.out.println("envoie à  "+ s.toString());
                 InputStream input  = s.getInputStream();
                 OutputStream output = s.getOutputStream();
-                String cmd ="write/@/"+ fichier.getName() + "/@/"+Integer.toString( partie) +"/@/"+Integer.toString( buffer.length)  ;
+                String cmd ="write/@/"+ fichier.getName() + "/@/"+partie +"/@/"+buffer.length;
                 output.write(cmd.getBytes());
                 System.out.println("fin envoie commande");
 
@@ -68,7 +63,7 @@ public class HdfsClientWrite {
                 int nbByte = input.read(bufferRep);
 
                 System.out.println("la reponse est bien recus");
-                String Sbuffer = new String(Arrays.copyOfRange( bufferRep ,0 ,nbByte ));  ;
+                String Sbuffer = new String(Arrays.copyOfRange( bufferRep ,0 ,nbByte ));
                 System.out.println("ok = "  + Sbuffer);
                 if(Sbuffer.equals("ok")){
                     //le serveur est pret on peut envoyer le buffer
@@ -92,12 +87,12 @@ public class HdfsClientWrite {
 
     }
 
-    private void writeKV () throws InvalidArgumentException, IOException, ConnexionPerdueException, NotBoundException {
+    private void writeKV () throws InvalidArgumentException, IOException, NotBoundException {
         boolean exists = fichier.exists();
         if(exists){
             FileReader fis = new FileReader(fichier);
             BufferedReader bufferedReader = new BufferedReader(fis);
-            String line = "";
+            String line;
             int fileSize = 0;
             int partie = 0 ;
             StringBuilder stringToSend= new StringBuilder();
@@ -142,7 +137,7 @@ public class HdfsClientWrite {
         Socket s = new  Socket(addServeur, port);
         OutputStream output = s.getOutputStream();
         InputStream input = s.getInputStream();
-        String cmd ="write/@/"+ fichier.getName() + "/@/"+Integer.toString(partie) +"/@/"+Integer.toString( stringToSend.toString().getBytes().length);
+        String cmd = "write/@/"+ fichier.getName() + "/@/"+ partie +"/@/"+ stringToSend.getBytes().length;
         output.write(cmd.getBytes());
 
         System.out.println("attente de la reponse dans du serveur");
@@ -150,7 +145,7 @@ public class HdfsClientWrite {
         int nbByte = input.read(bufferRep);
 
         System.out.println("la reponse est bien recus");
-        String Sbuffer = new String(Arrays.copyOfRange( bufferRep ,0 ,nbByte ));  ;
+        String Sbuffer = new String(Arrays.copyOfRange( bufferRep ,0 ,nbByte ));
         System.out.println("ok = "  + Sbuffer);
         if(Sbuffer.equals("ok")){
             //le serveur est pret on peut envoyer le buffer
@@ -172,26 +167,14 @@ public class HdfsClientWrite {
         if (format == null ) {
             try {
                 writeNoFormat() ;
-            } catch (InvalidArgumentException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ConnexionPerdueException e) {
-                e.printStackTrace();
-            } catch (NotBoundException e) {
+            } catch (InvalidArgumentException | IOException | ConnexionPerdueException | NotBoundException e) {
                 e.printStackTrace();
             }
         }
         else if(format == Format.Type.KV || format == Format.Type.LINE){
             try {
                 writeKV() ;
-            } catch (InvalidArgumentException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ConnexionPerdueException e) {
-                e.printStackTrace();
-            } catch (NotBoundException e) {
+            } catch (InvalidArgumentException | IOException | NotBoundException e) {
                 e.printStackTrace();
             }
         }

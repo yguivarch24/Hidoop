@@ -8,9 +8,9 @@ import java.net.UnknownHostException;
 
 public class HdfsServeur extends Thread{
     static String path = "";
-    static ServerSocket serverConnection;
-    InetAddress addr ;
-    int port ;
+    private static ServerSocket serverConnection;
+    private InetAddress addr ;
+    private int port ;
 
 
     public HdfsServeur( String host , int port ) throws InvalidArgumentException {
@@ -64,10 +64,6 @@ public class HdfsServeur extends Thread{
             }
 
         }
-
-
-
-
     }
 
 

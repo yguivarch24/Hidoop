@@ -19,17 +19,13 @@ import java.util.List;
 
 public class HdfsClientDelete  extends Thread {
     //TODO connection + commande
-    String nom ;
-    FragmentListInter listeNamingNode ;
-    public HdfsClientDelete( String nomFichier)  {
+    private String nom ;
+    private FragmentListInter listeNamingNode ;
+    HdfsClientDelete(String nomFichier)  {
         nom = nomFichier ;
         try {
             listeNamingNode = (FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
     }
@@ -57,7 +53,6 @@ public class HdfsClientDelete  extends Thread {
             String fName = nom + ".part" + i; // le nom du fragment que l'on supprime à cette itération
             String fNameRes = fName + "-res";
             String cmd ="delete/@/" + fName;
-            String cmd2 = "delete/@/" + fNameRes;
             try {
 
                 //initialisation du socket
@@ -82,24 +77,29 @@ public class HdfsClientDelete  extends Thread {
                         Sbuffer = Sbuffer + new String(buffer);
                     }*/
                     System.out.println(Sbuffer);
-                    if( Sbuffer.equals("ok")){
-                        System.out.println("les fichiers part et part-res ont bien ete supprimes");
-                        try {
-                            listeNamingNode.removeFragment(serv, fName);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    } else if( Sbuffer.equals( "ok1")){
-                        try {
-                            listeNamingNode.removeFragment(serv, fName);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                        System.out.println("le fichier part a ete supprime") ;
-                    }else if( Sbuffer.equals( "ok2")){
-                        System.out.println("le fichier part-res a ete supprime") ;
-                    }else {
-                        System.out.println("les fichiers n'ont pas pu etre supprime") ;
+                    switch (Sbuffer) {
+                        case "ok":
+                            System.out.println("les fichiers part et part-res ont bien ete supprimes");
+                            try {
+                                listeNamingNode.removeFragment(serv, fName);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case "ok1":
+                            try {
+                                listeNamingNode.removeFragment(serv, fName);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                            System.out.println("le fichier part a ete supprime");
+                            break;
+                        case "ok2":
+                            System.out.println("le fichier part-res a ete supprime");
+                            break;
+                        default:
+                            System.out.println("les fichiers n'ont pas pu etre supprime");
+                            break;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -121,9 +121,9 @@ public class HdfsClientDelete  extends Thread {
         return s.toString();
     }
 
-    private List<String> conversion(HashMap<String, ArrayList<String>> frags) throws RemoteException { // conversion d'une fragmentList en une liste telle que le ième fragment se trouve sur le ième host de la liste
+    private List<String> conversion(HashMap<String, ArrayList<String>> frags) { // conversion d'une fragmentList en une liste telle que le ième fragment se trouve sur le ième host de la liste
         boolean trouve = true;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         int i = 0;
         while (trouve) { // pour chaque fragments, on parcours la liste de fragment de chaque host... pas très optimal...
             trouve = false;

@@ -13,16 +13,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class HdfsClientRead  extends Thread {
+public class HdfsClientRead {
 
-    File fichier  ;
-    String nom  ;
-    FileOutputStream fos ;
-    FragmentListInter listeNamingNode ;
+    private String nom  ;
+    private FileOutputStream fos ;
+    private FragmentListInter listeNamingNode ;
 
-    public HdfsClientRead(String nomFichier  , String PositionLocal){
+    HdfsClientRead(String nomFichier, String PositionLocal){
         nom = nomFichier ;
-        fichier = new File(PositionLocal) ;
+        File fichier = new File(PositionLocal);
         try {
             fos = new FileOutputStream(fichier);
         } catch (FileNotFoundException e) {
@@ -31,16 +30,12 @@ public class HdfsClientRead  extends Thread {
         //gestion du rmi
         try {
             listeNamingNode = (FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
 
     }
-    public void run() {
+    public void read() {
 
 
         //on demande au rmi où sont stocké les fragment du fichier
@@ -67,7 +62,7 @@ public class HdfsClientRead  extends Thread {
             String cmd = "read/@/" + nom + ".part" + i + "-res";
 
             InputStream input = null;
-            OutputStream output = null;
+            OutputStream output;
             try {
                 input = s.getInputStream();
                 output = s.getOutputStream();
@@ -109,9 +104,9 @@ public class HdfsClientRead  extends Thread {
         }
     }
 
-    private List<String> conversion(HashMap<String, ArrayList<String>> frags) throws RemoteException { // conversion d'une fragmentList en une liste telle que le ième fragment se trouve sur le ième host de la liste
+    private List<String> conversion(HashMap<String, ArrayList<String>> frags) { // conversion d'une fragmentList en une liste telle que le ième fragment se trouve sur le ième host de la liste
         boolean trouve = true;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         int i = 0;
         while (trouve) { // pour chaque fragments, on parcours la liste de fragment de chaque host... pas très optimal...
             trouve = false;

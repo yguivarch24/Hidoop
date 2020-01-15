@@ -32,7 +32,7 @@ public class Job implements JobInterfaceX {
         this.outFormat = Format.Type.KV;
     }
 
-    public Job(String infname, String outfname, Format.Type inForm) throws RemoteException,NotBoundException,MalformedURLException {
+    Job(String infname, String outfname, Format.Type inForm) {
         this.inFName = infname;
         this.outFName = outfname;
         this.inFormat = inForm;
@@ -130,7 +130,7 @@ public class Job implements JobInterfaceX {
         /* appel du hdfsread ? */
         HdfsClient.HdfsRead(this.inFName, this.inFName + "-res"); // en supposant que l'appel static soit possible
 
-        HdfsClient.HdfsDelete(this.inFName); // suppréssion des fragments désormais inutiles sur les serveurs
+        Thread thread = HdfsClient.HdfsDelete(this.inFName); // suppréssion des fragments désormais inutiles sur les serveurs
 
         switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :
@@ -151,6 +151,7 @@ public class Job implements JobInterfaceX {
 
         File fileres = new File(inFName+"-res");
         boolean bool = fileres.delete();
+        thread.join();
     }
 
     private static int maxLength(HashMap<String, ArrayList<String>> map){

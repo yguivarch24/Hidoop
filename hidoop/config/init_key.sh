@@ -8,7 +8,7 @@ if [ $# = 1 ]; then
     ssh-copy-id $1@phenix
     ssh-copy-id $1@beatles
     ssh-copy-id $1@bouba
-    ssh-copy-id $1@albator
+    ssh-copy-id $1@bravoos
 
 else
     echo "Il faut votre login en parametre"

@@ -22,7 +22,7 @@ public class InitServeur {
             int i = Integer.parseInt(args[0]);
             HdfsServeur hdfsServeur = new HdfsServeur(Project.HOSTSPORT[i]);
             new Thread(hdfsServeur).start();
-            new Thread(new DaemonImpl(hdfsServeur,"localhost", Integer.toString(Project.HOSTSPORT[i]), i)).start();
+            new Thread(new DaemonImpl(hdfsServeur,Project.HOSTS[i], Integer.toString(Project.HOSTSPORT[i]), i)).start();
         } catch (NumberFormatException e) {
             System.out.println(e.getMessage());
             System.out.println("Il faut un entier comme paramètre");

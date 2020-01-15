@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
 
 public class AppHidoop {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         String inName = "";
         String outName = "";
@@ -53,6 +53,7 @@ public class AppHidoop {
             e.printStackTrace();
         }
         System.out.println("Traitement fini. Fichier disponible sous le nom de " + outName + " dans le repertoire courant");
+        System.exit(0);
     }
 
     private static Format.Type toFormat(String str) throws FormatInconnuException {

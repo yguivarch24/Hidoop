@@ -9,37 +9,19 @@ import formats.LineFormat;
 import java.io.IOException;
 
 public class HdfsClient {
-    //private Machine hdfsS[];
 
-
-    private static void usage() {
-        System.out.println("Usage: java HdfsClient read <file>");
-        System.out.println("Usage: java HdfsClient write <line|kv> <file>");
-        System.out.println("Usage: java HdfsClient delete <file>");
-    }
-
-    public static void HdfsDelete(String hdfsFname) {
+    public static Thread HdfsDelete(String hdfsFname) {
         HdfsClientDelete thread = new HdfsClientDelete(hdfsFname);
-        thread.run();
+        thread.start();
+        return thread;
     }
 
     public static void HdfsWrite(Format.Type fmt, String localFSSourceFname) {
-        try {
-            HdfsClientWrite write = new HdfsClientWrite( localFSSourceFname , fmt);
-            write.write();
-        } catch (InvalidArgumentException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ConnexionPerdueException e) {
-            e.printStackTrace();
-        }
+        new HdfsClientWrite( localFSSourceFname , fmt).write();
     }
 
-    public static void HdfsRead(String hdfsFname, String localFSDestFname) throws InterruptedException {
-        HdfsClientRead thread = new HdfsClientRead(hdfsFname ,localFSDestFname  ) ;
-        thread.start();
-        thread.join();
+    public static void HdfsRead(String hdfsFname, String localFSDestFname) {
+        new HdfsClientRead(hdfsFname ,localFSDestFname ).read();
     }
 
 }
