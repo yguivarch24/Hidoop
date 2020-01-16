@@ -47,7 +47,7 @@ public class MapReduceImpl implements MapReduce {
 
         ((Format) reader).open(Format.OpenMode.R);
         while ((ligne = reader.read()) != null) {
-            if (map.containsKey(ligne.v)) {
+            if (map.containsKey(ligne.k)) {
                 map.put(ligne.k, map.get(ligne.k) + Integer.parseInt(ligne.v));
             }
 
