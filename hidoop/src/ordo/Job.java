@@ -128,21 +128,21 @@ public class Job implements JobInterfaceX {
         }
 
         /* appel du hdfsread ? */
-        HdfsClient.HdfsRead(this.inFName, this.inFName + "-res"); // en supposant que l'appel static soit possible
+        HdfsClient.HdfsRead(this.inFName, Project.PATH + this.inFName + "-res");
 
         Thread thread = HdfsClient.HdfsDelete(this.inFName); // suppréssion des fragments désormais inutiles sur les serveurs
 
         switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :
-                reader = new LineFormat(this.inFName + "-res");
+                reader = new LineFormat(Project.PATH + this.inFName + "-res");
                 writer = new LineFormat(this.outFName);
                 break;
             case KV :
-                reader = new KVFormat(this.inFName + "-res");
+                reader = new KVFormat(Project.PATH + this.inFName + "-res");
                 writer = new KVFormat(this.outFName);
                 break;
             default :
-                reader = new KVFormat(this.inFName + "-res");
+                reader = new KVFormat(Project.PATH + this.inFName + "-res");
                 writer = new KVFormat(this.outFName);
                 break;
         }

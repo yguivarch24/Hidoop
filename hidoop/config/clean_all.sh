@@ -1,13 +1,17 @@
 #! /bin/bash
 
 
-ssh $1@salameche sh clean_local.sh
+if [ $# = 1 ]; then
+      ssh "$1"@salameche "kill -9 \`ps -C java -o pid=\`"
 
 
-    ssh $1@piafabec sh clean_local.sh
+          ssh "$1"@piafabec "kill -9 \`ps -C java -o pid=\`"
 
-    ssh $1@carapuce sh clean_local.sh
+          ssh "$1"@carapuce "kill -9 \`ps -C java -o pid=\`"
 
-    ssh $1@magicarpe sh clean_local.sh
+          ssh "$1"@magicarpe "kill -9 \`ps -C java -o pid=\`"
 
-    ssh $1@rondoudou sh clean_local.sh
+          ssh "$1"@rondoudou "kill -9 \`ps -C java -o pid=\`"
+else
+    echo "Il faut votre login en parametre"
+fi

@@ -134,7 +134,9 @@ public class HdfsClientWrite {
         int val = rand.nextInt(Project.HOSTS.length);
         InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
         int port = Project.HOSTSPORT[val];
+        System.out.println("Création Socket");
         Socket s = new  Socket(addServeur, port);
+        System.out.println("Fin Création Socket");
         OutputStream output = s.getOutputStream();
         InputStream input = s.getInputStream();
         String cmd = "write/@/"+ fichier.getName() + "/@/"+ partie +"/@/"+ stringToSend.getBytes().length;

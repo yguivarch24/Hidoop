@@ -101,6 +101,8 @@ public class HdfsClientRead {
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (NullPointerException ne) {
+            ne.printStackTrace();
         }
     }
 

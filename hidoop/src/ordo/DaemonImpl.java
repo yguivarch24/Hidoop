@@ -31,8 +31,8 @@ public class DaemonImpl extends UnicastRemoteObject implements Daemon, Runnable 
     public void runMap(Mapper m, Format reader, Format writer, CallBack cb) throws RemoteException {
         new Thread(() -> {
             System.out.println("Je me suis lancé avec le fichier "+reader.getFname());
-            reader.setFname(port+"/"+reader.getFname());
-            writer.setFname(port+"/"+writer.getFname());
+            reader.setFname(Project.PATH+port+"/"+reader.getFname());
+            writer.setFname(Project.PATH+port+"/"+writer.getFname());
             m.map(reader, writer); // traitement d'un fragment (celui lié au reader)
 
             try { // problème : l'exception ne peut pas être propagée à cause du fonctionnement du Thread...

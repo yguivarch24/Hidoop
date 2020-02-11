@@ -1,5 +1,7 @@
 package hdfs;
 
+import config.Project;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
@@ -17,7 +19,7 @@ public class HdfsServeurThread  extends Thread  {
         output = s.getOutputStream() ;
 
         //path ="";
-        path = Integer.toString(s.getLocalPort()  ) + "/"  ;
+        path = Project.PATH+Integer.toString(s.getLocalPort()  ) + "/"  ;
         File file = new File(path);
         file.mkdir();
     }
@@ -74,7 +76,12 @@ public class HdfsServeurThread  extends Thread  {
         //on attends la rÃ©ponse
         int taille = Integer.parseInt(arg[3]);
         byte[] buffer = new byte[taille];
-        int nbByte  = input.read(buffer ) ;
+        int nbByte;
+        int count = 0;
+        do {
+            nbByte = input.read(buffer, count, taille - count);
+            count += nbByte;
+        } while (nbByte > 0);
         fos.write(buffer);
         fos.close();
         System.out.println(this.socket.toString() + " transfert fini");

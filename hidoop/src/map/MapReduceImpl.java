@@ -29,8 +29,6 @@ public class MapReduceImpl implements MapReduce {
         }
         ((Format) reader).close();
 
-        System.out.println(map.toString());
-
         ((Format) writer).open(Format.OpenMode.W);
         for (String mot : map.keySet()) {
             writer.write(new KV(mot, map.get(mot).toString()));
