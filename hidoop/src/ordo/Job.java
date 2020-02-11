@@ -100,13 +100,13 @@ public class Job implements JobInterfaceX {
                         final Format write = writer;
                         final CallBackImpl[] caba = cb;
                         System.out.println(reader.getFname());
-                        new Thread(() -> {
-                                try {
-                                    ((Daemon) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.REGISTRYPORT + "/Daemon" + num)).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
-                                } catch (NotBoundException | MalformedURLException | RemoteException e) {
-                                    throw new RuntimeException(e.getMessage());
-                                }
-                            }).start(); // lancement du thread
+                        //new Thread(() -> {
+                        //        try {
+                        ((Daemon) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.REGISTRYPORT + "/Daemon" + num)).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
+                        //        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+                        //            throw new RuntimeException(e.getMessage());
+                        //        }
+                        //    }).start(); // lancement du thread
 
                         wait[i] = true; // un runMap à été lancé, il faudra attendre son CallBack
                     } catch (Exception e) {
