@@ -29,7 +29,7 @@ public class HdfsServeurThread  extends Thread  {
 
             //on attends le mesage du client
             byte[] buffer = new byte[100]; 
-            int nbByte  = input.read(buffer ) ;
+            int nbByte  = input.read(buffer);
 
             //on lit la commande /!\ cmd pas entiere ?
             //System.out.println(input.available());
@@ -51,9 +51,9 @@ public class HdfsServeurThread  extends Thread  {
                     delete(arg) ;
                     break;
             }
-            socket.close();
             socket.getOutputStream().close();
             socket.getInputStream().close();
+            socket.close();
 
         } catch (Exception e) {
             System.out.println("erreur detected hdfsService "+e.toString());

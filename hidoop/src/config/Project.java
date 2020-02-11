@@ -15,12 +15,12 @@ import java.util.List;
 public class Project {
 
     public final static String PATH = "/tmp/";
-    public final static String[] HOSTS =  {"piafabec","nidoran","magicarpe"};
-    public final static Integer[] HOSTSPORT = {4010,4011,4012};
+    public final static String[] HOSTS =  {"piafabec","carapuce","magicarpe", "rondoudou"};
+    public final static Integer[] HOSTSPORT = {4010,4011,4012, 4013};
 
     public final static int TAILLEPART = 1024;
 
-    public final static String NAMINGNODE = "salameche";
+    public final static String NAMINGNODE = "salameche"; //"localhost";
     public final static Integer REGISTRYPORT = 12344;
 
 

@@ -18,6 +18,7 @@ public class InitNamingNode {
         } catch (RemoteException e) {
             System.out.println(e.getMessage());
             System.out.println("Config échoué");
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (AlreadyBoundException e) {
