@@ -4,6 +4,8 @@
     #                                             #
     ###############################################
 
+Tout les scripts se trouve dans le dossier hidoop/config
+
 Etape 1 :
 Lancer le script init_key.sh avec en paramètre le nom d'utilisateur de la session que vous souhaitez utiliser
 
