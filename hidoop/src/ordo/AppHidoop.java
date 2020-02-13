@@ -17,7 +17,7 @@ public class AppHidoop {
 
         String inName = "";
         String outName = "";
-        Format.Type fileType = null;
+        Format.Type fileType = Format.Type.LINE;
 
         int nbArgs = args.length;
         switch (nbArgs) {
