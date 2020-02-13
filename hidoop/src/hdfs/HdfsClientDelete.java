@@ -41,8 +41,8 @@ public class HdfsClientDelete  extends Thread {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        System.out.println("fin conversion ");
-        System.out.println("debut de la supression ");
+        //System.out.println("fin conversion ");
+        //System.out.println("debut de la supression ");
         //TODO format de la liste
         //on se connecte au serveurs
         for( int i = 0 ; i<listeServeur.size() ; i++ ){
@@ -76,10 +76,10 @@ public class HdfsClientDelete  extends Thread {
                         byteread = input.read(buffer);
                         Sbuffer = Sbuffer + new String(buffer);
                     }*/
-                    System.out.println(Sbuffer);
+                    //System.out.println(Sbuffer);
                     switch (Sbuffer) {
                         case "ok":
-                            System.out.println("les fichiers part et part-res ont bien ete supprimes");
+                            //System.out.println("les fichiers part et part-res ont bien ete supprimes");
                             try {
                                 listeNamingNode.removeFragment(serv, fName);
                             } catch (RemoteException e) {
@@ -92,13 +92,13 @@ public class HdfsClientDelete  extends Thread {
                             } catch (RemoteException e) {
                                 e.printStackTrace();
                             }
-                            System.out.println("le fichier part a ete supprime");
+                            //System.out.println("le fichier part a ete supprime");
                             break;
                         case "ok2":
-                            System.out.println("le fichier part-res a ete supprime");
+                            //System.out.println("le fichier part-res a ete supprime");
                             break;
                         default:
-                            System.out.println("les fichiers n'ont pas pu etre supprime");
+                            //System.out.println("les fichiers n'ont pas pu etre supprime");
                             break;
                     }
                 } catch (IOException e) {
@@ -110,7 +110,7 @@ public class HdfsClientDelete  extends Thread {
             }
 
         }
-        System.out.println("fin supression");
+        //System.out.println("fin supression");
     }
 
     private String Byte2String(byte[] b, int taille) {

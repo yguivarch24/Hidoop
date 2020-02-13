@@ -31,13 +31,13 @@ public class HdfsClientWrite {
 
         boolean exists = fichier.exists();
         if(exists){
-            System.out.println("le fichier existe");
+            //System.out.println("le fichier existe");
             //le fichier existe bien
             FileInputStream fis = new FileInputStream(fichier) ;
             int partie = 0 ;
             int i = 0;
             while(fis.available() > 0 ){   //on pourra paraleliser cette partie
-                System.out.println("le flux n'est pas vide ");
+                //System.out.println("le flux n'est pas vide ");
                 //on envoie le flux Ã  un client
                 int taille = Math.min(Project.TAILLEPART, fis.available()) ;
                 byte[] buffer = new byte[taille];
@@ -55,22 +55,22 @@ public class HdfsClientWrite {
                 OutputStream output = s.getOutputStream();
                 String cmd ="write/@/"+ fichier.getName() + "/@/"+partie +"/@/"+buffer.length;
                 output.write(cmd.getBytes());
-                System.out.println("fin envoie commande");
+                //System.out.println("fin envoie commande");
 
                 //TODO la rendre passive on attends la reponse (active) ;
-                System.out.println("attente de la reponse dans du serveur");
+                //System.out.println("attente de la reponse dans du serveur");
                 byte[] bufferRep = new byte[100];
                 int nbByte = input.read(bufferRep);
 
-                System.out.println("la reponse est bien recus");
+                //System.out.println("la reponse est bien recus");
                 String Sbuffer = new String(Arrays.copyOfRange( bufferRep ,0 ,nbByte ));
-                System.out.println("ok = "  + Sbuffer);
+                //System.out.println("ok = "  + Sbuffer);
                 if(Sbuffer.equals("ok")){
                     //le serveur est pret on peut envoyer le buffer
                     output.write( buffer);
 
                     s.close();
-                    System.out.println("---fin envoie---");
+                    //System.out.println("---fin envoie---");
 
                     //TODO ajouter au naming node
                     updateFragmentList(fichier, val, i);
@@ -129,32 +129,32 @@ public class HdfsClientWrite {
     }
 
     private void sendServeur(String stringToSend, int partie) throws IOException, NotBoundException {
-        System.out.println("envoie du fichier au serveur");
+        //System.out.println("envoie du fichier au serveur");
         Random rand = new Random();
         int val = rand.nextInt(Project.HOSTS.length);
         InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
         int port = Project.HOSTSPORT[val];
-        System.out.println("Création Socket");
+        //System.out.println("Création Socket");
         Socket s = new  Socket(addServeur, port);
-        System.out.println("Fin Création Socket");
+        //System.out.println("Fin Création Socket");
         OutputStream output = s.getOutputStream();
         InputStream input = s.getInputStream();
         String cmd = "write/@/"+ fichier.getName() + "/@/"+ partie +"/@/"+ stringToSend.getBytes().length;
         output.write(cmd.getBytes());
 
-        System.out.println("attente de la reponse dans du serveur");
+        //System.out.println("attente de la reponse dans du serveur");
         byte[] bufferRep = new byte[100];
         int nbByte = input.read(bufferRep);
 
-        System.out.println("la reponse est bien recus");
+        //System.out.println("la reponse est bien recus");
         String Sbuffer = new String(Arrays.copyOfRange( bufferRep ,0 ,nbByte ));
-        System.out.println("ok = "  + Sbuffer);
+        //System.out.println("ok = "  + Sbuffer);
         if(Sbuffer.equals("ok")){
             //le serveur est pret on peut envoyer le buffer
             output.write(stringToSend.getBytes());
 
 
-            System.out.println("---fin envoie---");
+            //System.out.println("---fin envoie---");
             updateFragmentList(fichier, val, partie);
         }
         input.close();

@@ -26,7 +26,7 @@ public class HdfsServeurThread  extends Thread  {
 
 
     public void run() {
-        System.out.println(socket.toString() + " j'attends un message");
+        //System.out.println(socket.toString() + " j'attends un message");
         try {
 
             //on attends le mesage du client
@@ -41,7 +41,7 @@ public class HdfsServeurThread  extends Thread  {
             //on traite ici chaqu'une des commandes
 
             String[] arg = cmd.split("/@/");
-            System.out.println(cmd);
+            //System.out.println(cmd);
             switch (arg[0]) {
                 case "write":
                     write(arg);
@@ -68,7 +68,7 @@ public class HdfsServeurThread  extends Thread  {
 
 
     private void write(String[] arg) throws IOException {
-        System.out.println(this.socket.toString() + " debut write  ");
+        //System.out.println(this.socket.toString() + " debut write  ");
         File file = new File(path+arg[1] + ".part"+ Integer.toString( Integer.parseInt( arg[2])));
         FileOutputStream fos = new FileOutputStream(file);
         System.out.println(this.socket.toString() + " creation du fichier ,envoie du ok ");
@@ -84,15 +84,15 @@ public class HdfsServeurThread  extends Thread  {
         } while (nbByte > 0);
         fos.write(buffer);
         fos.close();
-        System.out.println(this.socket.toString() + " transfert fini");
+        //System.out.println(this.socket.toString() + " transfert fini");
     }
 
     private void read(String[] arg ) throws IOException {
-        System.out.println(this.socket.toString() + " debut read  ");
+        //System.out.println(this.socket.toString() + " debut read  ");
         File file = new File(path+arg[1] );
         if(file.exists()){
             //output.write("ok".getBytes());
-            System.out.println(socket.toString() + " les fichier est existant ");
+            //System.out.println(socket.toString() + " le fichier existe ");
             //l'envoie
             FileInputStream fis = new FileInputStream(file) ;
             int nbByte = fis.available() ;
@@ -112,7 +112,7 @@ public class HdfsServeurThread  extends Thread  {
         }
     }
     private void delete(String[] arg){
-        System.out.println(this.socket.toString() + " debut delete  ");
+        //System.out.println(this.socket.toString() + " debut delete  ");
         File file = new File(path+arg[1]);
         File file2 = new File(path+arg[1]+"-res");
         try {
