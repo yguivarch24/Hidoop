@@ -1,11 +1,11 @@
-###############################################
-#                                             #
-#          Comment utiliser Hidoop ?          #
-#                                             #
-###############################################
+    ###############################################
+    #                                             #
+    #          Comment utiliser Hidoop ?          #
+    #                                             #
+    ###############################################
 
 Etape 1 :
-Lancé le script init_key.sh avec en paramètre le nom d'utilisateur de la session que vous souhaitez utiliser
+Lancer le script init_key.sh avec en paramètre le nom d'utilisateur de la session que vous souhaitez utiliser
 
 Exemple :
     sh init_key.sh yguivarc
@@ -16,42 +16,42 @@ Cela peremetra d'accélérer l'étape suivante.
 
 
 Etape 2 :
-Lancé le script init_hidoop_server.sh avec en paramètre le nom d'utilisateur de la session que vous souhaitez utiliser et le chemin absolu vers la racine de l'harborescence où se trouve tout les fichiers compilé (.class)
+Lancer le script init_hidoop_server.sh avec en paramètre le nom d'utilisateur de la session que vous souhaitez utiliser et le chemin absolu vers la racine de l'arborescence où se trouve tous les fichiers compilés (.class)
 
 Exemple :
     sh init_hidoop_server.sh yguivarc /home/yguivarc/2_annee/Projet_Intergiciel/out/production/hidoop
 
-Ce script permet de lancer un NamingNode sur salameche et 4 Serveur sur les autres ordinateurs
+Ce script permet de lancer un NamingNode sur salameche et 4 Serveurs sur les autres ordinateurs.
 Cela bloquera le terminal.
 
 
-
 Etape 3 :
-Lancé le main de AppHidoop en précisant la racine due l'harborescence des fichiers compilé.
+Lancer le main de AppHidoop en précisant la racine de l'arborescence des fichiers compilés.
 
 Exemple :
     java -cp /home/yguivarc/2_annee/Projet_Intergiciel/out/production/hidoop ordo.AppHidoop <nomFichierEntree> <nomFichierSortie> Line
 
+Note importante :  Il faut lancer AppHidoop dans le même dossier que le fichier à traiter (il faut donner uniquement le nom du fichier sans son chemin).
 
-Note importante :  Il faut lancé AppHidoop dans le même dossier que le fichier à traiter (il faut donner uniquement le nom du fichier sans son chemin)
 
 Etape 4 :
-Si vous souhaitez arrêter les Serveurs, fermez le terminal bloqué de l'étape 2 (ou faites un CTRL-C) puis lancé le script clean_all.sh avec le nom d'utilisateur de la session que vous avez utilisé pour lancer les Serveurs
+Si vous souhaitez arrêter les Serveurs, fermez le terminal bloqué de l'étape 2 (ou faites un CTRL-C) puis lancez le script clean_all.sh avec le nom d'utilisateur de la session que vous avez utilisé pour lancer les Serveurs.
 
 Exemple :
     sh clean_all.sh yguivarc
 
-Cela va tuer tout les programmes java sur les machines que nous avons utilisé.(Certain kill ne vont pas fonctionner mais c'est normal) 
+Cela va tuer tous les programmes java sur les machines que nous avons utilisé (Certain kill ne vont pas fonctionner mais c'est normal).
 
-#############################################################
-#                                                           #
-#          Comment ajouter ou retirer un serveur ?          #
-#                                                           #
-#############################################################
+
+    #############################################################
+    #                                                           #
+    #          Comment ajouter ou retirer un serveur ?          #
+    #                                                           #
+    #############################################################
 
 Dans la classe Project, 2 listes permettent de créer les serveurs HOSTS et HOSTSPORTS.
     
-    - HOSTS contient le nom de tout les ordinateurs que l'ont utilise comme serveur.
+    - HOSTS contient le nom de tous les ordinateurs que l'on utilise comme serveur.
     
     - HOSTSPORTS contient le port à utiliser pour chaque serveur.
 
@@ -90,3 +90,19 @@ clean_all.sh :
 
 Exemple :
     ssh "$1"@rondoudou "kill -9 \`ps -C java -o pid=\`"
+
+
+    #############################################################
+    #                                                           #
+    #        Comment générer un fichier .txt volumineux ?       #
+    #                                                           #
+    #############################################################
+
+Pour générer un fichier volumineux, il suffit d'utiliser la commande suivante :
+    yes `cat [nom_du_petit_fichier]` | head -c [nombre_de_Go_voulus]GB > [nom\_du\_gros\_fichier]
+
+Exemple : (filesample.txt étant un fichier .txt de ~1Ko)
+    yes `cat filesample.txt` | head -c 10GB > filesample_gros.txt
+
+    Cette commande génère le fichier filesample_gros.txt d'un taille de 10Go contenant le contenu
+    de filesample répéter un grand nombre de fois.
