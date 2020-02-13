@@ -48,7 +48,11 @@ public class AppHidoop {
 
         /* Lancement du traitement */
         try {
+            long startTime = System.currentTimeMillis();
             new Job(inName, outName, fileType).startJob(new MapReduceImpl());
+            long endTime   = System.currentTimeMillis();
+            long totalTime = endTime - startTime;
+            System.out.println("Temps du Job : " + totalTime);
         } catch (RemoteException | NotBoundException | MalformedURLException | InterruptedException e) {
             e.printStackTrace();
         }

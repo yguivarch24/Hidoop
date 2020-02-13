@@ -63,6 +63,7 @@ public class Job implements JobInterfaceX {
         maps = ((FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list")).getFragments();
             // on récupère les noms des fragments pour chaque hosts sur le registry du NamingNode
 
+        long startTime = System.currentTimeMillis();
         for (int j = 0; j < maxLength(maps); j++) { // une boucle par fragment (1 fragment traité sur chaque host)
             for (int i = 0; i < Project.HOSTS.length; i++) { // une boucle par host
 
@@ -126,6 +127,9 @@ public class Job implements JobInterfaceX {
                 }
             }
         }
+        long endTime   = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        System.out.println("Temps de Mapping : " + totalTime);
 
         /* appel du hdfsread ? */
         HdfsClient.HdfsRead(this.inFName, Project.PATH + this.inFName + "-res");
@@ -147,7 +151,11 @@ public class Job implements JobInterfaceX {
                 break;
         }
 
+        startTime = System.currentTimeMillis();
         mr.reduce(reader, writer); // Traitement du fichier résultant des traitements des fragments
+        endTime   = System.currentTimeMillis();
+        totalTime = endTime - startTime;
+        System.out.println("Temps du Reduce : " + totalTime);
 
         File fileres = new File(inFName+"-res");
         boolean bool = fileres.delete();
