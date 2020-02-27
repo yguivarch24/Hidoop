@@ -103,7 +103,7 @@ public class Job implements JobInterfaceX {
                         System.out.println(reader.getFname());
                         //new Thread(() -> {
                         //        try {
-                        ((Daemon) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.REGISTRYPORT + "/Daemon" + num)).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
+                        ((Daemon) Naming.lookup("//" + Project.HOSTS[num] + ":" + Project.REGISTRYPORT + "/Daemon")).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
                         //        } catch (NotBoundException | MalformedURLException | RemoteException e) {
                         //            throw new RuntimeException(e.getMessage());
                         //        }

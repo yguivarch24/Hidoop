@@ -18,13 +18,11 @@ public class DaemonImpl extends UnicastRemoteObject implements Daemon, Runnable 
     private HdfsServeur hdfsServer;
     private String host;
     private String port;
-    private int num;
 
-    public DaemonImpl(HdfsServeur hdfsServer, String machine, String por, int i) throws RemoteException {
+    public DaemonImpl(HdfsServeur hdfsServer, String machine, String por) throws RemoteException {
         this.hdfsServer = hdfsServer;
         this.host = machine;
         this.port = por;
-        this.num = i;
     }
 
     @Override
@@ -46,7 +44,7 @@ public class DaemonImpl extends UnicastRemoteObject implements Daemon, Runnable 
     @Override
     public void run() {
         try {
-            Naming.rebind("//" + this.host + ":" + Project.REGISTRYPORT + "/Daemon" + num, this);
+            Naming.rebind("//" + this.host + ":" + Project.REGISTRYPORT + "/Daemon", this);
 
             System.out.println("Working Directory = " +
                     System.getProperty("user.dir"));

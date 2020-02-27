@@ -18,6 +18,7 @@ public class FragmentList extends UnicastRemoteObject implements FragmentListInt
         fragments = new HashMap<>();
         int i = 0;
         for (String s: Project.HOSTS) {
+
             fragments.put(s + ":" + Project.HOSTSPORT[i],new ArrayList<>());
             i++;
         }
@@ -41,6 +42,31 @@ public class FragmentList extends UnicastRemoteObject implements FragmentListInt
     public FragmentList getFragmentObject() throws RemoteException{
         return this ;
     }
+
+    public String[] getHostArray(){
+        String[] hosts=new String[fragments.keySet().size()];
+        int i=0;
+        for(String key:fragments.keySet()){
+            StringTokenizer st1 = new StringTokenizer(key, ":");
+            hosts[i]=st1.nextToken();
+            i++;
+        }
+        return hosts;
+    }
+
+    public Integer[] getPortArray(){
+        Integer[] ports=new Integer[fragments.keySet().size()];
+        int i=0;
+        for(String key:fragments.keySet()){
+            StringTokenizer st1 = new StringTokenizer(key, ":");
+            st1.nextToken();
+            ports[i]=Integer.parseInt(st1.nextToken());
+            i++;
+        }
+        return ports;
+    }
+
+    //cette fonction permet de convertir la hashMap des fragments en un fichier
     public void saveFragmentFile(String fileName) throws IOException,RemoteException {
         FileOutputStream fos = new FileOutputStream(fragmentFile) ;
         String fileContent="";
@@ -60,6 +86,8 @@ public class FragmentList extends UnicastRemoteObject implements FragmentListInt
         fos.write(fileContent.getBytes());
         fos.close();
     }
+
+    //cette fonction permet de convertir un fichier  en une hashMap des fragments
     public HashMap<String, ArrayList<String>> setHashMapFragmentFile() throws RemoteException, IOException {
         if(fragmentFile.exists()){
             fragments = new HashMap<>();

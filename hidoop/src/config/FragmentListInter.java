@@ -18,4 +18,8 @@ public interface FragmentListInter extends Remote {
 
     FragmentList getFragmentObject() throws RemoteException ;
 
+    public String[] getHostArray()throws RemoteException;
+
+    public Integer[] getPortArray()throws RemoteException;
+
 }

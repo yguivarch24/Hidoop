@@ -1,36 +1,47 @@
 package ordo;
 
+import config.FragmentListInter;
 import hdfs.HdfsClient;
 import formats.Format;
 import config.Project ;
 import map.MapReduceImpl;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 
 public class AppHidoop {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, NotBoundException {
 
         String inName = "";
         String outName = "";
         Format.Type fileType = Format.Type.LINE;
 
+        Project.setNamingnode(args[3]);
+
+        FragmentListInter liste = (FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
+        Project.setHOSTS(liste.getHostArray());
+        System.out.println(""+Arrays.toString(Project.HOSTS));
+        Project.setHOSTSPORT(liste.getPortArray());
+
         int nbArgs = args.length;
         switch (nbArgs) {
-            case 3 :
+            case 4 :
                 try {
                     fileType = toFormat(args[2]);
                 } catch (FormatInconnuException e) {
                     System.out.println(e.getMessage());
                     System.exit(2);
                 }
-            case 2 :
+            case 3 :
                 outName = args[1];
-            case 1 :
+            case 2 :
                 inName = args[0];
                 break;
             default :

@@ -43,8 +43,8 @@ public class HdfsClientWrite {
                 byte[] buffer = new byte[taille];
                 fis.read(buffer,0, taille) ;
 
-                Random rand = new Random();
-                int val = rand.nextInt(Project.HOSTS.length);
+
+                int val = partie % Project.HOSTS.length;
                 InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
 
                 int port = Project.HOSTSPORT[val];
