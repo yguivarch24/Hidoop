@@ -130,8 +130,8 @@ public class HdfsClientWrite {
 
     private void sendServeur(String stringToSend, int partie) throws IOException, NotBoundException {
         //System.out.println("envoie du fichier au serveur");
-        Random rand = new Random();
-        int val = rand.nextInt(Project.HOSTS.length);
+
+        int val = partie%Project.HOSTS.length;
         InetAddress addServeur = InetAddress.getByName(Project.HOSTS[val]);
         int port = Project.HOSTSPORT[val];
         //System.out.println("Création Socket");
