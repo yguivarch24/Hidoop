@@ -10,7 +10,7 @@ Etape 1 :
 Lancer le script init_key.sh avec en paramètre le nom d'utilisateur de la session que vous souhaitez utiliser
 
 Exemple :
-    sh init_key.sh yguivarc
+    /bin/bash init_key.sh yguivarc
 
 Ce script permet de créer des clé ssh pour 5 ordinateurs de l'ENSEEIHT (salameche, piafabec, carapuce, magicarpe et rondoudou)
 Cela peremetra d'accélérer l'étape suivante.
@@ -21,7 +21,7 @@ Etape 2 :
 Lancer le script init_hidoop_server.sh avec en paramètre le nom d'utilisateur de la session que vous souhaitez utiliser et le chemin absolu vers la racine de l'arborescence où se trouve tous les fichiers compilés (.class)
 
 Exemple :
-    sh init_hidoop_server.sh yguivarc /home/yguivarc/2_annee/Projet_Intergiciel/out/production/hidoop
+    /bin/bash init_hidoop_server.sh yguivarc /home/yguivarc/2_annee/Projet_Intergiciel/out/production/hidoop
 
 Ce script permet de lancer un NamingNode sur salameche et 4 Serveurs sur les autres ordinateurs.
 Cela bloquera le terminal.
@@ -40,9 +40,12 @@ Etape 4 :
 Si vous souhaitez arrêter les Serveurs, fermez le terminal bloqué de l'étape 2 (ou faites un CTRL-C) puis lancez le script clean_all.sh avec le nom d'utilisateur de la session que vous avez utilisé pour lancer les Serveurs.
 
 Exemple :
-    sh clean_all.sh yguivarc
+    /bin/bash clean_all.sh yguivarc
 
 Cela va tuer tous les programmes java sur les machines que nous avons utilisé (Certain kill ne vont pas fonctionner mais c'est normal).
+
+
+Note : Il est important d'utiliser /bin/bash et non sh car sinon certaine commande ne fonctionne pas.
 
 
     #############################################################

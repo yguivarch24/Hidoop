@@ -1,6 +1,4 @@
 #! /bin/bash
-
-
 if [ $# = 1 ]; then
       ssh "$1"@salameche "kill -9 \`ps -C java -o pid=\`"
 

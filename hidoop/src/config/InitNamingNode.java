@@ -11,6 +11,10 @@ import java.rmi.server.UnicastRemoteObject;
 public class InitNamingNode {
 
     public static void main(String[] args) {
+        if (args.length != 2) {
+            System.out.println("Nombre d'argument invalide il en faut 2");
+            System.exit(1);
+        }
         try {
 
             LocateRegistry.createRegistry(Project.REGISTRYPORT);

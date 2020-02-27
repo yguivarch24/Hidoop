@@ -14,8 +14,8 @@ public class InitServeur {
 
         LocateRegistry.createRegistry(Project.REGISTRYPORT);
 
-        if (args.length != 1) {
-            System.out.println("Nombre d'argument invalide il en faut 1");
+        if (args.length != 3) {
+            System.out.println("Nombre d'argument invalide il en faut 3");
             System.exit(1);
         }
         try {

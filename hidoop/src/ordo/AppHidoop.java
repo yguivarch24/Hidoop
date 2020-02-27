@@ -42,7 +42,6 @@ public class AppHidoop {
         }
 
         if (outName.equals("")) {outName = inName + "-KVres";}
-        
         /* Fragmentation du fichier */
         HdfsClient.HdfsWrite(fileType, inName);
 

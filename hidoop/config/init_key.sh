@@ -1,7 +1,4 @@
 #! /bin/bash
-
-
-
 if [ $# = 1 ]; then
     ssh-keygen -t rsa -b 4096
     ssh-copy-id "$1"@salameche
