@@ -1,15 +1,21 @@
 #! /bin/bash
+
+fileServeur="serveur.config"
+fileNamingNode="namingNode.config"
+
 if [ $# = 1 ]; then
-      ssh "$1"@salameche "kill -9 \`ps -C java -o pid=\`"
 
 
-          ssh "$1"@piafabec "kill -9 \`ps -C java -o pid=\`"
+    namingNode=$(cat "$fileNamingNode")
+    IFS=':' read -ra host <<< "$namingNode"
+    ssh "$1"@"${host[0]}" "kill -9 \`ps -C java -o pid=\`"
 
-          ssh "$1"@carapuce "kill -9 \`ps -C java -o pid=\`"
+    while IFS= read -r line
+    do
+      IFS=':' read -ra host <<< "$line"
+      ssh "$1"@"${host[0]}" "kill -9 \`ps -C java -o pid=\`" < /dev/null
+    done <"$fileServeur"
 
-          ssh "$1"@magicarpe "kill -9 \`ps -C java -o pid=\`"
-
-          ssh "$1"@rondoudou "kill -9 \`ps -C java -o pid=\`"
 else
     echo "Il faut votre login en parametre"
 fi
