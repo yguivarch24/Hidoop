@@ -23,8 +23,6 @@ public class AppHidoop {
         String outName = "";
         Format.Type fileType = Format.Type.LINE;
 
-        Project.setNamingnode(args[3]);
-
         FragmentListInter liste = (FragmentListInter) Naming.lookup("//" + Project.NAMINGNODE + ":" + Project.REGISTRYPORT + "/list");
         Project.setHOSTS(liste.getHostArray());
         System.out.println(""+Arrays.toString(Project.HOSTS));
@@ -34,18 +32,20 @@ public class AppHidoop {
         switch (nbArgs) {
             case 4 :
                 try {
-                    fileType = toFormat(args[2]);
+                    fileType = toFormat(args[3]);
                 } catch (FormatInconnuException e) {
                     System.out.println(e.getMessage());
                     System.exit(2);
                 }
             case 3 :
-                outName = args[1];
+                outName = args[2];
             case 2 :
-                inName = args[0];
+                inName = args[1];
+                Project.setNamingnode(args[0]);
                 break;
             default :
-                System.out.println("arguments :  NomFichierIn  NomFichierOut  TypeFichier");
+                System.out.println("arguments :  NomNamingNode NomFichierIn  NomFichierOut  TypeFichier");
+                System.out.println("    NomNamingNode : le nom de la machine host du naming node suivie de son port (exemple -> salameche:12344)");
                 System.out.println("    NomFichierIn : le nom du fichier d'entrée (obligatoire)");
                 System.out.println("    NomFichierOut : le nom du fichier de sortie (optionnel)");
                 System.out.println("    TypeFichier : le type du fichier d'entrée (optionnel, nécessite un nom de fichier de sortie et un nombre de fragment)");
