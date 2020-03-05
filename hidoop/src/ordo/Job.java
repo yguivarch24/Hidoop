@@ -6,6 +6,7 @@ import hdfs.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -21,6 +22,8 @@ public class Job implements JobInterfaceX {
     private Format.Type outFormat;
     private String inFName;
     private String outFName;
+    private String inFPath;
+    private String outFPath;
     private int nbReduces;
     private int nbMaps;
     private SortComparator sortComp;
@@ -28,13 +31,17 @@ public class Job implements JobInterfaceX {
     public Job() {
         this.inFName = "";
         this.outFName = "";
+        this.inFPath = "";
+        this.outFPath = "";
         this.inFormat = Format.Type.LINE;
         this.outFormat = Format.Type.KV;
     }
 
     Job(String infname, String outfname, Format.Type inForm) {
-        this.inFName = infname;
-        this.outFName = outfname;
+        this.inFName = Paths.get(infname).getFileName().toString();
+        this.outFName = Paths.get(outfname).getFileName().toString();
+        this.inFPath = infname;
+        this.outFPath = outfname;
         this.inFormat = inForm;
         this.outFormat = Format.Type.KV;
     }
@@ -43,6 +50,9 @@ public class Job implements JobInterfaceX {
 
         if (this.outFName.equals("")) { // si aucun nom pour le fichier de sortie n'à été donné, on met un nom par défaut
             this.outFName = this.inFName + "-KVres";
+        }
+        if (this.outFPath.equals("")) { // si aucun chemin pour le fichier de sortie n'a été donné, on met un chemin par défaut
+            this.outFPath = this.inFPath + "-KVres";
         }
 
         CallBackImpl[] cb = new CallBackImpl[Project.HOSTS.length]; // 1 CallBack par hosts
@@ -139,15 +149,15 @@ public class Job implements JobInterfaceX {
         switch (this.outFormat) { // initialisation du reader pour le fichier résultant des traitement et du writer pour le fichier de sortie de Hidoop
             case LINE :
                 reader = new LineFormat(Project.PATH + this.inFName + "-res");
-                writer = new LineFormat(this.outFName);
+                writer = new LineFormat(this.outFPath);
                 break;
             case KV :
                 reader = new KVFormat(Project.PATH + this.inFName + "-res");
-                writer = new KVFormat(this.outFName);
+                writer = new KVFormat(this.outFPath);
                 break;
             default :
                 reader = new KVFormat(Project.PATH + this.inFName + "-res");
-                writer = new KVFormat(this.outFName);
+                writer = new KVFormat(this.outFPath);
                 break;
         }
 

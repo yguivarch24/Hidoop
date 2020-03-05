@@ -140,6 +140,7 @@ public class HdfsClientWrite {
         OutputStream output = s.getOutputStream();
         InputStream input = s.getInputStream();
         String cmd = "write/@/"+ fichier.getName() + "/@/"+ partie +"/@/"+ stringToSend.getBytes().length;
+        System.out.println(cmd);
         output.write(cmd.getBytes());
 
         //System.out.println("attente de la reponse dans du serveur");
