@@ -54,7 +54,7 @@ public class AppHidoop {
 
         if (outName.equals("")) {outName = inName + "-KVres";}
         /* Fragmentation du fichier */
-        HdfsClient.HdfsWrite(fileType, Paths.get(inName).getFileName().toString());
+        HdfsClient.HdfsWrite(fileType, inName);
 
         /* Lancement du traitement */
         try {
