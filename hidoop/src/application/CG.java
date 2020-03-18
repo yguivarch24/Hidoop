@@ -1,15 +1,16 @@
+package application;
 // v0.0 PM, le 18/12/17
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import map.MapReduce;
+
 import java.io.IOException;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
 
-public class CG {
+
+
+public class CG implements MapReduce {
     /* Construction du Graphe : produit un fichier de paires URL <-> PR;liste URL_liens
      * les liens de la liste étant séparés par des espaces
      */
@@ -52,6 +53,8 @@ public class CG {
 
 
     }
+
+    public
 
     public static Map<String, Double> uneIter(CG cg){
         //TODO: traiter le cas des pages pour lesquelles il n'existe pas de lien sortant
