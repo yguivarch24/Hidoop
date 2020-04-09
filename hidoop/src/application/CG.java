@@ -1,14 +1,22 @@
 package application;
 // v0.0 PM, le 18/12/17
-import map.MapReduce;
 
+import formats.FormatReader;
+import formats.FormatWriter;
+import map.MapReduce;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
 
-
+//Pour faire fonctionner correctement, il faut ajouter Jsoup 1.12.2 aux librairies. (file -> project structure -> libraries)
 
 public class CG implements MapReduce {
     /* Construction du Graphe : produit un fichier de paires URL <-> PR;liste URL_liens
@@ -24,7 +32,7 @@ public class CG implements MapReduce {
     }
 
 
-    public static void map(CG cg){
+    public static void map2(CG cg){
         //Entrée: paires URL;liste URL_liens
         // Permet de calculer le PR de chaque lien grâce à plusieurs iterations de l'algo jusqu'à convergence
 
@@ -53,8 +61,18 @@ public class CG implements MapReduce {
 
 
     }
+    public void map(FormatReader reader, FormatWriter writer) {
 
-    public
+    }
+
+    @Override
+    public void map(BufferedReader reader, FormatWriter writer) {
+//Méthode vide pour coller à l'interface
+    }
+
+    public void reduce(FormatReader reader, FormatWriter writer) {
+
+    }
 
     public static Map<String, Double> uneIter(CG cg){
         //TODO: traiter le cas des pages pour lesquelles il n'existe pas de lien sortant
@@ -155,7 +173,7 @@ public class CG implements MapReduce {
 
         while (aTraiter.size()>0) {
             liens.clear();
-            page = aTraiter.pollFirst();
+            page = aTraiter.pollFirst(); //Renvoie le premier elt de la liste et le retire de la liste
             //System.out.println("page : "+page);
             try {
                 doc = Jsoup.connect(page).get();
@@ -200,7 +218,7 @@ public class CG implements MapReduce {
         }
         System.out.println("--------- : ");
 
-        map(coGr);
+        coGr.map2(coGr);
 
         coGr.produire(coGr.liensDePages);
         coGr.produire2(coGr);

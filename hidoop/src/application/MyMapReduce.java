@@ -1,5 +1,6 @@
 package application;
 
+import java.io.BufferedReader;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -32,7 +33,12 @@ public class MyMapReduce implements MapReduce {
 		}
 		for (String k : hm.keySet()) writer.write(new KV(k,hm.get(k).toString()));
 	}
-	
+
+	@Override
+	public void map(BufferedReader reader, FormatWriter writer) {
+
+	}
+
 	public void reduce(FormatReader reader, FormatWriter writer) {
                 Map<String,Integer> hm = new HashMap<>();
 		KV kv;
