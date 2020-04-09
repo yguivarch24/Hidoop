@@ -1,6 +1,8 @@
 package map;
 
 import formats.*;
+
+import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -34,6 +36,11 @@ public class MapReduceImpl implements MapReduce {
             writer.write(new KV(mot, map.get(mot).toString()));
         }
         ((Format) writer).close();
+    }
+
+    @Override
+    public void map(BufferedReader reader, FormatWriter writer) {
+
     }
 
     public void reduce(FormatReader reader, FormatWriter writer) {
