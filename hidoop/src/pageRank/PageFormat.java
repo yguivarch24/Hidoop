@@ -1,22 +1,25 @@
 package pageRank;
 
+import formats.Format;
 import formats.KV;
 import formats.KVFormat;
 
+import java.io.*;
 import java.util.ArrayList;
 
 
 //classe modelisant le couple clef- valeur ( url , <PR ,[URLs]> )
 
 public class PageFormat extends KVFormat {
-    final String CoupleSeparateur = ";" ;
+    final static String CoupleSeparateur = ";" ;
+    private transient LineNumberReader lnr;
+
     public PageFormat(String fname) {
         super(fname);
     }
 
-    public Couple_PR_Liens readCouple(){
+    public static Couple_PR_Liens readCouple(KV kv){
         Couple_PR_Liens couple = new Couple_PR_Liens();
-        KV kv = this.read() ;
         String[] contenus = kv.v.split(CoupleSeparateur);
         couple.setPR(  Double.parseDouble(contenus[0] ) );
         ArrayList<String> liens = new ArrayList<String>() ;
@@ -26,14 +29,50 @@ public class PageFormat extends KVFormat {
         couple.setLiens(liens);
         return couple ;
     }
-    public  void writeCouple(String URl , Couple_PR_Liens couple){
+    public  void writeCouple(String URl , Couple_PR_Liens couple) {
         String s = "";
         s = s + String.valueOf(couple.PR) + this.CoupleSeparateur;
-        for(String l : couple.Liens){
-            s = s + l + this.CoupleSeparateur ;
+        for (String l : couple.Liens) {
+            s = s + l + this.CoupleSeparateur;
         }
-        this.write(new KV(  URl , s ));
+        this.write(new KV(URl, s));
     }
+    public KV read() {
+        KV kv = new KV() ;
+        try {
+            String line = lnr.readLine() ;
+            String[] sep1 = line.split(KV.SEPARATOR) ;
+            kv.k = sep[0] ;
+            kv.v = sep1[1];
+            return kv ;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    @Override
+    public void open(Format.OpenMode mode) {
+        try {
+
+
+            switch (mode) {
+                case R:
+                    lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(this.getFname())));
+                    break;
+                case W:
+                    bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.getFname())));
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 
 
 }

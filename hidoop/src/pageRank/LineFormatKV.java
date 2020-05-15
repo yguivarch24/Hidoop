@@ -62,8 +62,8 @@ public class LineFormatKV  implements Format {
             if (kv.v == null) return null;
             index += kv.v.length() +kv.k.length()+ KV.SEPARATOR.length() ;
             return kv;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e ) {
+
             return null;
         }
     }

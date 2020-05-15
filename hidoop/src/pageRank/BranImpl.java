@@ -21,7 +21,7 @@ public class BranImpl implements MapReduce {
         //on lit la page web
         ((Format) reader).open(Format.OpenMode.R);
         ((Format) writer).open(Format.OpenMode.W);
-        System.out.println(  ((Format) reader).getFname() );
+        //System.out.println(  ((Format) reader).getFname() );
         LineFormatKV lfkv = new LineFormatKV (( (Format) reader).getFname() )  ;
         ((Format) reader).close();
         lfkv.open(Format.OpenMode.R);
@@ -69,6 +69,34 @@ public class BranImpl implements MapReduce {
 
     @Override
     public void reduce(FormatReader reader, FormatWriter writer) {
+        ((Format) reader).open(Format.OpenMode.R);
+        ((Format) writer).open(Format.OpenMode.W);
+        LineFormatKV lfkv = new LineFormatKV (( (Format) reader).getFname() )  ;
+        ((Format) reader).close();
+        lfkv.open(Format.OpenMode.R);
+
+        double nbLien = 0 ;
+        KV k =lfkv.read() ;
+        while( k != null   ){
+            nbLien++;
+            k =lfkv.read() ;
+        }
+        //System.out.println(nbLien);
+        lfkv.close();
+        lfkv = new LineFormatKV (( (Format) reader).getFname() )  ;
+        lfkv.open(Format.OpenMode.R);
+
+         k =lfkv.read() ;
+        while( k != null   ){
+            //System.out.println("hello");
+            Couple_PR_Liens c = PageFormat.readCouple(k ) ;
+            c.setPR(1/nbLien);
+            ((PageFormat) writer ).writeCouple(k.k , c );
+            k =lfkv.read() ;
+        }
+        ((PageFormat) writer ).close();
+
+
 
     }
 

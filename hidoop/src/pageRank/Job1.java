@@ -123,6 +123,8 @@ public class Job1 implements JobInterfaceX {
             final List<Format> read = reader;
             final List<Format> write = writer;
             final CallBackImpl[] caba = cb;
+            System.out.println(Host);
+            System.setProperty("java.rmi.server.hostname","192.168.1.21");
             ((Daemon) Naming.lookup("//" + Host + ":" + Project.REGISTRYPORT + "/Daemon")).runMap(mapRed, read, write, caba[num]); // on récupère le ième Daemon et on lance le map
         }
 
@@ -167,10 +169,10 @@ public class Job1 implements JobInterfaceX {
         }
 
         startTime = System.currentTimeMillis();
-        mr.reduce(readerReduce, writerReduce); // Traitement du fichier résultant des traitements des fragments
+        // mr.reduce(readerReduce, writerReduce); // Traitement du fichier résultant des traitements des fragments
         endTime   = System.currentTimeMillis();
         totalTime = endTime - startTime;
-        System.out.println("Temps du Reduce : " + totalTime);
+        //System.out.println("Temps du Reduce : " + totalTime);
 
         File fileres = new File(inFName+"-res");
         boolean bool = fileres.delete();
