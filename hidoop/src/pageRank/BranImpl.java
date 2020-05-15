@@ -20,9 +20,17 @@ public class BranImpl implements MapReduce {
     public void map(FormatReader reader, FormatWriter writer) {
         //on lit la page web
         ((Format) reader).open(Format.OpenMode.R);
-        ((LineFormatKV) writer).open(Format.OpenMode.W);
-        String URLpage  = reader.read().k ;
+        ((Format) writer).open(Format.OpenMode.W);
+        System.out.println(  ((Format) reader).getFname() );
+        LineFormatKV lfkv = new LineFormatKV (( (Format) reader).getFname() )  ;
         ((Format) reader).close();
+        lfkv.open(Format.OpenMode.R);
+
+
+
+        String URLpage  = lfkv.read().v ;
+        System.out.println(URLpage);
+
         Set<String> urltrouvees = null;
         try {
             urltrouvees = BranImpl.findLinks(URLpage) ;
@@ -46,10 +54,10 @@ public class BranImpl implements MapReduce {
         ((PageFormat)writer).writeCouple(URLpage , couple) ;
         */
         for(String e : URLvalide ) {
-            ((LineFormatKV) writer).write(new KV(URLpage, e));
+            writer.write(new KV(URLpage, e));
         }
-        ((LineFormatKV) writer).close() ;
-
+        ((Format) writer).close() ;
+        lfkv.close();
 
 
     }
