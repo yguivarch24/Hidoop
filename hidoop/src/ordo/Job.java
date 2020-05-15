@@ -126,14 +126,17 @@ public class Job implements JobInterfaceX {
 
 
         }*/
-
-        for (int i = 0; i < Project.HOSTS.length; i++) { // une boucle par host
+        
+        int iter = 0;
+        do
+        {
+        for (int i = 0; i < Project.HOSTS.length; i++) { // une it�ration par host
             String keyHost = Project.HOSTS[i] + ":" + Project.HOSTSPORT[i];
             reader =new ArrayList<>();
             writer =new ArrayList<>();
             List<String> frags=maps.get(keyHost);
             String host=Project.HOSTS[i];
-            for(int j=0;j<frags.size();j++){
+            for(int j=0;j<frags.size();j++){ // une it�ration par fragment
                 try {
                     switch (this.inFormat) { // initialisation du reader à partir du nom récupérer depuis NamingNode
                         case LINE :
@@ -143,6 +146,9 @@ public class Job implements JobInterfaceX {
                         case KV :
                             reader.add(new KVFormat(frags.get(j)));
                             break;
+                        case PR :
+                        	//reader.add(new PRFormat(frags.get(j)));
+                        	break;
                         default :
                             reader.add(new LineFormat(frags.get(j)));
                     }
@@ -154,6 +160,9 @@ public class Job implements JobInterfaceX {
                         case KV :
                             writer.add(new KVFormat(frags.get(j) + "-res"));
                             break;
+                        case PR :
+                        	//writer.add(new PRFormat(frags.get(0)));
+                        	break;
                         default :
                             writer.add(new KVFormat(frags.get(j) + "-res"));
                     }
@@ -199,7 +208,6 @@ public class Job implements JobInterfaceX {
         long totalTime = endTime - startTime;
         System.out.println("Temps de Mapping : " + totalTime);
 
-        /* appel du hdfsread ? */
         HdfsClient.HdfsRead(this.inFName, Project.PATH + this.inFName + "-res");
 
         Thread thread = HdfsClient.HdfsDelete(this.inFName); // suppréssion des fragments désormais inutiles sur les serveurs
@@ -215,6 +223,10 @@ public class Job implements JobInterfaceX {
                 readerReduce = new KVFormat(Project.PATH + this.inFName + "-res");
                 writerReduce = new KVFormat(this.outFPath);
                 break;
+            /*case PR :
+            	readerReduce = new PRFormat(Projects.PATH + this.inFName + "-res");
+            	writerReduce = new PRFormat(this.outFPath);
+            	break;*/
             default :
                 readerReduce = new KVFormat(Project.PATH + this.inFName + "-res");
                 writerReduce = new KVFormat(this.outFPath);
@@ -230,8 +242,16 @@ public class Job implements JobInterfaceX {
         File fileres = new File(inFName+"-res");
         boolean bool = fileres.delete();
         thread.join();
+        
+        if (this.inFormat == Format.Type.PR)
+        {
+        	/* update du graph */
+        }
+        
+        iter++;
+        } while (this.inFormat == Format.Type.PR && iter < 10);
     }
-
+        
     private static int maxLength(HashMap<String, ArrayList<String>> map){
         int max = 0;
         for (String s:map.keySet()) {
