@@ -15,7 +15,7 @@ public class KVFormat implements Format {
     private KV kv;
 
     private transient BufferedReader br;
-    private transient BufferedWriter bw;
+    protected transient BufferedWriter bw;
     private transient long index = 0;
     private transient Format.OpenMode mode;
 
