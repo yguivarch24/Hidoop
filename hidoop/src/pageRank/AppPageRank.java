@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class AppPageRank {
+    Format.Type fileType ;
 
     public static void main(String[] args) throws IOException, NotBoundException {
 
@@ -153,6 +154,7 @@ public class AppPageRank {
 
 
         System.out.println("---map construction graph fini---");
+
         /*
         for(String e : pageVisitees) {
             System.out.println(e);
@@ -174,13 +176,22 @@ public class AppPageRank {
         PageFormat valeur = new PageFormat(Project.PATH+ "valeur.pr") ;
         new BranImpl().reduce( pf,valeur);
         System.out.println("---reducer construction graph fini--- ");
-        LineFormatKV prochainesPages = new LineFormatKV("valeur.pr");
-        HdfsClient.HdfsWriteKV(fileType, "valeur.pr");
 
-        /* Lancement du traitement */
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            System.out.println("je veux pas attendre ");
+        }
+        /*
+        LineFormatKV prochainesPages = new LineFormatKV(Project.PATH +"valeur.pr");
+        HdfsClient.HdfsWriteKV(fileType, Project.PATH+"valeur.pr");
+
+
         try {
             long startTime = System.currentTimeMillis();
-            new Job1(inName, outName, fileType).startJob(new calculator50000() );
+            new Job1( "valeur.pr", "outName"+"-res", fileType).startJob(new calculator50000() );
             long endTime = System.currentTimeMillis();
             long totalTime = endTime - startTime;
             System.out.println("Temps du Job : " + totalTime);
@@ -188,11 +199,65 @@ public class AppPageRank {
             e.printStackTrace();
             System.out.println("je m'arrete ici ...");
         }
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            System.out.println("je veux pas attendre ");
+        }
+        System.out.println("---map calcule finis---");
 
+        //on prepare le reduce
+        LineFormatKV  inverse = new LineFormatKV(Project.PATH + "valeur.pr-res") ;
+        LineFormatKV Sortie = new LineFormatKV(Project.PATH +"sortie.pr") ;
+        new calculator50000().reduce(inverse ,Sortie );
+        */
 
+        Format f =majPageRank(valeur) ;
+        for(int i =0 ; i <1 ;i++){
+            f =majPageRank(f) ;
+        }
         System.out.println("---PageRank Fini---");
         System.exit(0);
     }
+    private static Format majPageRank(Format etat){
+
+
+        Format.Type fileType = Format.Type.LINE;
+        HdfsClient.HdfsWriteKV(fileType, etat.getFname() );
+        System.out.println("etat: "+ etat.getFname());
+        /* Lancement du traitement */
+        try {
+            long startTime = System.currentTimeMillis();
+            new Job1( etat.getFname().replace(Project.PATH ,""), "outName"+"-res", fileType).startJob(new calculator50000() );
+            long endTime = System.currentTimeMillis();
+            long totalTime = endTime - startTime;
+            System.out.println("Temps du Job : " + totalTime);
+        } catch (RemoteException | NotBoundException | MalformedURLException | InterruptedException e) {
+            e.printStackTrace();
+            System.out.println("je m'arrete ici ...");
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            System.out.println("je veux pas attendre ");
+        }
+        System.out.println("---map calcule finis---");
+
+        //on prepare le reduce
+        LineFormatKV  inverse = new LineFormatKV(Project.PATH + "valeur.pr-res") ;
+        LineFormatKV Sortie = new LineFormatKV(Project.PATH +"sortie.pr") ;
+        new calculator50000().reduce(inverse ,Sortie );
+
+
+        return Sortie ;
+
+
+
+    }
+
+
 
     private static Format.Type toFormat(String str) throws FormatInconnuException {
         switch (str) {

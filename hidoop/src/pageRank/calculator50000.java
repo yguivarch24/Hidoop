@@ -67,14 +67,24 @@ public class calculator50000 implements MapReduce {
                 pages.put(page , new ArrayList<>()) ;
                 pagePR.put(page , pr) ;
                 pageNbLiens.put(page, nbLiens ) ;
+                pages.get(page).add(lien) ;
             }
             else{
                 pages.get(page).add(lien) ;
             }
 
-
             k = lfkv.read() ;
+
         }
+
+        for(String s : pages.keySet() ){
+            System.out.println(s);
+            for (String s1 : pages.get(s) ){
+                System.out.println("--"+ s1);
+            }
+        }
+
+
         //calcule du Page Rank !!!!!
         for(String e :pages.keySet()){
             double pr = 0 ;

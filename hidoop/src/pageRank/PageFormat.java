@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class PageFormat extends KVFormat {
     final static String CoupleSeparateur = ";" ;
     private transient LineNumberReader lnr;
+    protected Format.OpenMode mode1 ;
 
     public PageFormat(String fname) {
         super(fname);
@@ -37,12 +38,14 @@ public class PageFormat extends KVFormat {
         }
         this.write(new KV(URl, s));
     }
+
+    @Override
     public KV read() {
         KV kv = new KV() ;
         try {
             String line = lnr.readLine() ;
             String[] sep1 = line.split(KV.SEPARATOR) ;
-            kv.k = sep[0] ;
+            kv.k = sep1[0] ;
             kv.v = sep1[1];
             return kv ;
         } catch (IOException e) {
@@ -56,7 +59,7 @@ public class PageFormat extends KVFormat {
     public void open(Format.OpenMode mode) {
         try {
 
-
+            this.mode1 = mode ;
             switch (mode) {
                 case R:
                     lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(this.getFname())));
@@ -71,7 +74,21 @@ public class PageFormat extends KVFormat {
     }
 
 
-
+    @Override
+    public void close() {
+        try {
+            switch (this.mode1 ) {
+                case R:
+                    lnr.close();
+                    break;
+                case W:
+                    bw.close();
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
