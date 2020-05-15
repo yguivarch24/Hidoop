@@ -22,10 +22,20 @@ public class HdfsClientRead {
     HdfsClientRead(String nomFichier, String PositionLocal){
         nom = nomFichier ;
         File fichier = new File(PositionLocal);
+        System.out.println(PositionLocal) ;
         try {
             fos = new FileOutputStream(fichier);
         } catch (FileNotFoundException e) {
             System.out.println("probleme avec le fichier ");
+            //le fichier existe pas on le creer ?
+            try{
+            fichier.createNewFile() ;
+            fos = new FileOutputStream(fichier);
+            }
+            catch(Exception e1){
+            System.out.println("probleme persistant avec le fichier ");
+            e1.printStackTrace() ;
+            }
         }
         //gestion du rmi
         try {
@@ -75,6 +85,8 @@ public class HdfsClientRead {
                     if (!(input.available() == 0)) {
                         byte[] buffer = input.readNBytes(input.available());
                         // System.out.println(new String(buffer));
+
+                        //System.out.println(fos);
                         fos.write(buffer);
 
                         //TODO maj du rmi

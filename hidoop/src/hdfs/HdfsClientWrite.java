@@ -87,7 +87,7 @@ public class HdfsClientWrite {
 
     }
 
-    private void writeKV () throws InvalidArgumentException, IOException, NotBoundException {
+    public void writeKV () throws InvalidArgumentException, IOException, NotBoundException {
         boolean exists = fichier.exists();
         if(exists){
             FileReader fis = new FileReader(fichier);
@@ -98,6 +98,7 @@ public class HdfsClientWrite {
             StringBuilder stringToSend= new StringBuilder();
 
             while ((line = bufferedReader.readLine()) != null){
+                System.out.println("ligne lu:"+line);
                 if(line.getBytes().length > Project.TAILLEPART){
                     if(fileSize > 0) {
                         sendServeur(stringToSend.toString(),partie);
@@ -127,6 +128,50 @@ public class HdfsClientWrite {
         }
         else throw new InvalidArgumentException();
     }
+
+
+    public void writeKV1 () throws InvalidArgumentException, IOException, NotBoundException {
+        boolean exists = fichier.exists();
+        if(exists){
+            FileReader fis = new FileReader(fichier);
+            BufferedReader bufferedReader = new BufferedReader(fis);
+            String line;
+            int fileSize = 0;
+            int partie = 0 ;
+            StringBuilder stringToSend= new StringBuilder();
+
+            while ((line = bufferedReader.readLine()) != null){
+                System.out.println("ligne lu:"+line);
+                if(line.getBytes().length < Project.TAILLEPART){
+                    if(fileSize > 0) {
+                        sendServeur(stringToSend.toString(),partie);
+                        fileSize = 0;
+                        stringToSend = new StringBuilder();
+                        partie++;
+                    }
+                    sendServeur(line,partie);
+                    partie++;
+                } else if (fileSize + line.getBytes().length > Project.TAILLEPART){
+                    sendServeur(stringToSend.toString(),partie);
+
+                    stringToSend = new StringBuilder(line).append('\n');
+                    fileSize=line.getBytes().length;
+
+                    partie++;
+                }else{
+                    stringToSend.append(line).append('\n');
+                    fileSize=fileSize+line.getBytes().length;
+                }
+            }
+            if(fileSize>0){
+                sendServeur(stringToSend.toString(),partie);
+            }
+
+
+        }
+        else throw new InvalidArgumentException();
+    }
+
 
     private void sendServeur(String stringToSend, int partie) throws IOException, NotBoundException {
         //System.out.println("envoie du fichier au serveur");

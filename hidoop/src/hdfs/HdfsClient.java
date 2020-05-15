@@ -7,6 +7,7 @@ import formats.KVFormat;
 import formats.LineFormat;
 
 import java.io.IOException;
+import java.rmi.NotBoundException;
 
 public class HdfsClient {
 
@@ -23,5 +24,21 @@ public class HdfsClient {
     public static void HdfsRead(String hdfsFname, String localFSDestFname) {
         new HdfsClientRead(hdfsFname ,localFSDestFname ).read();
     }
+
+    public static void HdfsWriteKV(Format.Type fmt, String localFSSourceFname) {
+        try {
+            new HdfsClientWrite( localFSSourceFname , fmt).writeKV1();
+        } catch (InvalidArgumentException e) {
+            System.out.println("probleme HDFSCLIENT");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("probleme HDFSCLIENT");
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            System.out.println("probleme HDFSCLIENT");
+            e.printStackTrace();
+        }
+    }
+
 
 }
